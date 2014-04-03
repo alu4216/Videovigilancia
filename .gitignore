@@ -6,3 +6,5 @@
 #Carpetas con los ejecutables
 build-visorServidor-Desktop_Qt_5_2_0_clang_64bit-Debug/**/*
 build-visorCliente-Desktop_Qt_5_2_0_clang_64bit-Debug/**/*
+#Archivos .DS_Store de OS X
+*.DS_Store
