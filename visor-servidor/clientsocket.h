@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 #include <QBuffer>
 #include <QImage>
+#include <QMessageBox>
 
 class ClientSocket : public QObject
 {
@@ -17,6 +18,7 @@ signals:
     void s_mostrar_captura(const QImage&);
 public slots:
     void readData();
+    void mostrarErrores(QAbstractSocket::SocketError);
 private:
     QTcpSocket *tcpSocket_;
     QByteArray data_;

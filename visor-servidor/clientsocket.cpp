@@ -10,6 +10,8 @@ ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     leer_size_string_=false;
     connect(tcpSocket_,SIGNAL(readyRead()),this,SLOT(readData()));
     connect(tcpSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
+    connect(tcpSocket_,SIGNAL(error(QAbstractSocket::SocketError)),this,
+                              SLOT(mostrarErrores(QAbstractSocket::SocketError)));
 }
 //Destructor
 ClientSocket::~ClientSocket()
@@ -114,3 +116,25 @@ void ClientSocket::readData()
         }
     }
 }
+void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
+{
+  QString string=tcpSocket_->errorString();
+  qDebug()<<"Entro a mostrar Errores\n";
+  qDebug()<<string;
+  QMessageBox ventana;
+  ventana.setWindowTitle("Mensaje de Error");
+  ventana.setText(string);
+  ventana.setStandardButtons(QMessageBox::Ok);
+  ventana.exec();
+}
+
+
+
+
+
+
+
+
+
+
+
