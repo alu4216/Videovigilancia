@@ -1,0 +1,8 @@
+# Archivos .pro y .pro.user
+*.pro
+*.pro.user
+# Archivos de backup
+*~
+#Carpetas con los ejecutables
+build-visorServidor-Desktop_Qt_5_2_0_clang_64bit-Debug/**/*
+build-visorCliente-Desktop_Qt_5_2_0_clang_64bit-Debug/**/*
