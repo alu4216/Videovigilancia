@@ -184,11 +184,18 @@ void ViewerWindow::image_s(const QImage &image)
         Package package;
         package.size=bytes.size();//Tamaño de la imagen en bytes
         package.image=bytes;//Imagen
-        package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
+        package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo  
         package.name=settings.value("Network/Camara","INFO").toString();//Cadena a enviar
         package.size_string=package.name.size();//Tamaño de la cadena
 
+        //Fuerzo los bytes de los enteros a enviar a LittleEndian
+        package.size=qToLittleEndian(package.size);
+        package.timestamp=qToLittleEndian(package.timestamp);
+        package.size_string=qToLittleEndian(package.size_string);
+
+        //Reconversión de la cadena para enviar como ByteArray
         QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
+
 
         qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
                   " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
@@ -197,13 +204,14 @@ void ViewerWindow::image_s(const QImage &image)
 
         if(tcpsocket_->state()!=3) //reconectar camara al servidor
             reconectar();
-
-        tcpsocket_->write(reinterpret_cast<char*>(&package.size),4);
+        else
+        {
+        tcpsocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
         tcpsocket_->write(package.image,package.size);
-        tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),8);
-        tcpsocket_->write(reinterpret_cast<char*>(&package.size_string),4);
+        tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
+        tcpsocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
         tcpsocket_->write(array,array.size());
-
+        }
     }
 }
 //Ventana de preferencias de cámara.Seleccionar la cámara a utilizar

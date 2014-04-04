@@ -33,6 +33,7 @@ void ClientSocket::readData()
             data_=tcpSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             imagen_size_=*size;
+            imagen_size_=qFromLittleEndian(imagen_size_);//Reconvierto bytes de LittleEndia al usado en el pc
             data_.clear();
             qDebug()<<"TAMAÑO IMAGEN: "<<imagen_size_;
 
@@ -68,6 +69,7 @@ void ClientSocket::readData()
             data_=tcpSocket_->read(8);
             tam=reinterpret_cast<qint64*>(data_.data());
             timestamp_=*tam;
+            timestamp_=qFromLittleEndian(timestamp_);//Reconvierto bytes de LittleEndia al usado en el pc
             data_.clear();
             qDebug()<<"TIEMPO"<<timestamp_;
 
@@ -85,6 +87,7 @@ void ClientSocket::readData()
             data_=tcpSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             string_size_=*size;
+            string_size_=qFromLittleEndian(string_size_);//Reconvierto bytes de LittleEndia al usado en el pc
             qDebug()<<"TAMAÑO CADENA: "<<string_size_;
             data_.clear();
 

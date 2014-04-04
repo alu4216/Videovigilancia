@@ -6,6 +6,7 @@
 #include <QBuffer>
 #include <QImage>
 #include <QMessageBox>
+#include <QtEndian>
 
 class ClientSocket : public QObject
 {

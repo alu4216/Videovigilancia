@@ -25,6 +25,7 @@
 #include <QNetworkInterface>
 #include <QDataStream>
 
+
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"

@@ -22,6 +22,7 @@
 #include <QBuffer>
 #include <QImageWriter>
 #include <QDateTime>
+#include <QtEndian>
 
 
 #include "acerca.h"
@@ -82,8 +83,8 @@ private:
     {
         qint64 timestamp;
         QString name;
-        int size;
-        int size_string;
+        qint32 size;
+        qint32 size_string;
         QByteArray image;
     };
 
