@@ -4,9 +4,9 @@
 ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     QObject(parent),tcpSocket_(tcpSocket)
 {
-    leer_cabecera_=true;
+    leer_cabecera_=false;
     leer_imagen_=false;
-    leer_timestamp_=false;
+    leer_timestamp_=true;
     leer_size_string_=false;
     connect(tcpSocket_,SIGNAL(readyRead()),this,SLOT(readData()));
     connect(tcpSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
@@ -73,6 +73,11 @@ void ClientSocket::readData()
             leer_imagen_=false;
             leer_timestamp_=false;
             leer_size_string_=true;
+
+            //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
+            guardarImagen(timestamp_, image);
+
+
             emit s_mostrar_captura(image);
         }
     }
@@ -114,4 +119,23 @@ void ClientSocket::readData()
             leer_string_=false;
         }
     }
+}
+bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
+    qint32 szHx = 16;
+    qint32 s1 = 4;
+    qint32 s2 = 8;
+    qint32 sI = 11;
+    QString tt=QString::number(timestamp,szHx);
+    tt.insert(s1, QString("/"));
+    tt.insert(s2, QString("/"));
+    tt.push_front("./");
+    QString ttImage = tt;
+    ttImage.push_back(".JPEG");
+    tt.truncate(sI);
+    qDebug() << tt;
+    qDebug() << QDir::currentPath();
+    //QString path = QString("%1/%2/").arg(tt).arg();
+    QDir carpetaNueva;
+    carpetaNueva.mkpath(tt);
+    imagen.save(ttImage);
 }
