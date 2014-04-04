@@ -23,6 +23,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     dialog_ = NULL;
     conexion_=NULL;
     tcpsocket_ = NULL;
+    estado_=false;
     devices_ = QCamera::availableDevices();
 }
 //Destructor
@@ -164,39 +165,44 @@ void ViewerWindow::image_s(const QImage &image)
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     ui->label->setPixmap(pixmap);
 
+    //Lienas de código para enviar frame y metadatos al servidor
     if(tcpsocket_!=NULL)//Si hay una conexión abierta
     {
-    //Procesar la imagen para enviarla por la red
-    QBuffer buffer;//crea un buffer interno de tipo byte array donde guardar los bytes de las imagenes
-    QImageWriter imageWriter(&buffer,"JPG"); // Nos permite utilizar una serie de manejadores
-    // Y escribira los datos sobre buffer
-    QImage imageSend; //creación de la imagen a enviar
-    imageSend=pixmap.toImage(); // converción del pixmap pintando a una Qimagen
-    imageWriter.setFormat("JPG"); // tipo de formato
-    imageWriter.setCompression(70); // compresión del la imagen
-    imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
-    QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
+        //Procesar la imagen para enviarla por la red
+        QBuffer buffer;//crea un buffer interno de tipo byte array donde guardar los bytes de las imagenes
+        QImageWriter imageWriter(&buffer,"JPG"); // Nos permite utilizar una serie de manejadores
+        // Y escribira los datos sobre buffer
+        QImage imageSend; //creación de la imagen a enviar
+        imageSend=pixmap.toImage(); // converción del pixmap pintando a una Qimagen
+        imageWriter.setFormat("JPG"); // tipo de formato
+        imageWriter.setCompression(70); // compresión del la imagen
+        imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
+        QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
 
-    QSettings settings;
-    //Struct de información total a enviar
-    Package package;
-    package.size=bytes.size();//Tamaño de la imagen en bytes
-    package.image=bytes;//Imagen
-    package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
-    package.name=settings.value("Network/Camara","INFO").toString();//Cadena a enviar
-    package.size_string=package.name.size();//Tamaño de la cadena
+        QSettings settings;
+        //Struct de información total a enviar
+        Package package;
+        package.size=bytes.size();//Tamaño de la imagen en bytes
+        package.image=bytes;//Imagen
+        package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
+        package.name=settings.value("Network/Camara","INFO").toString();//Cadena a enviar
+        package.size_string=package.name.size();//Tamaño de la cadena
 
-    QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
+        QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
 
-    qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
-             " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
-    qDebug()<<"\n----------------------------------------------------------------";
+        qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
+                  " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
+        qDebug()<<"\n----------------------------------------------------------------";
 
-    tcpsocket_->write(reinterpret_cast<char*>(&package.size),4);
-    tcpsocket_->write(package.image,package.size);
-    tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),8);
-    tcpsocket_->write(reinterpret_cast<char*>(&package.size_string),4);
-    tcpsocket_->write(array,array.size());
+
+        if(tcpsocket_->state()!=3) //reconectar camara al servidor
+            reconectar();
+
+        tcpsocket_->write(reinterpret_cast<char*>(&package.size),4);
+        tcpsocket_->write(package.image,package.size);
+        tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),8);
+        tcpsocket_->write(reinterpret_cast<char*>(&package.size_string),4);
+        tcpsocket_->write(array,array.size());
 
     }
 }
@@ -231,7 +237,20 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     QSettings settings;
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
-    tcpsocket_ = new QTcpSocket(this);
+
+    if(tcpsocket_==NULL)
+        tcpsocket_ = new QTcpSocket(this);
+
+    tcpsocket_->connectToHost(ip,puerto);
+    connect(tcpsocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+}
+
+void ViewerWindow::reconectar()
+{
+    tcpsocket_->disconnect();
+    QSettings settings;
+    QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
+    int puerto = settings.value("Network/puerto",15000).toInt();
     tcpsocket_->connectToHost(ip,puerto);
     connect(tcpsocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
 }

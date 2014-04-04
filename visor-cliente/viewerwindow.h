@@ -43,21 +43,25 @@ public:
     explicit ViewerWindow(QWidget *parent = 0);
     ~ViewerWindow();
 
+private:
+    void reconectar();
+
 private slots:
     void on_Salir_clicked();
     void on_actionSalir_triggered();
     void on_actionAbrirImagen_triggered();
     void on_actionAbrirVideo_triggered();
-    void movie_frame(const QRect& rect);
     void on_checkBox_stateChanged(int arg1);
     void on_actionAcercaDe_triggered();
     void on_Push_Pausa_clicked();
     void on_actionCapturar_triggered();
     void on_actionPreferencias_triggered();
-    void actualizar_s(int);
-    void image_s(const QImage&);
     void on_actionAjustes_Conexion_triggered();
     void on_actionComenzar_a_enviar_triggered();
+
+    void movie_frame(const QRect& rect);
+    void actualizar_s(int);
+    void image_s(const QImage&);
 
 private:
     Ui::ViewerWindow * ui;
@@ -73,6 +77,7 @@ private:
     int indice_;
     int puerto_;
     QString ip_;
+    bool estado_;
     struct Package
     {
         qint64 timestamp;
@@ -81,7 +86,8 @@ private:
         int size_string;
         QByteArray image;
     };
-   //QList <Package>lista;
+
+    //QList <Package>lista;
 };
 
 #endif // VIEWERWINDOW_H
