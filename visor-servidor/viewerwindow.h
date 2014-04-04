@@ -64,6 +64,7 @@ private slots:
     void mostrar_captura_s(const QImage&);
 
 private:
+
     Ui::ViewerWindow * ui;
     QMovie * movie_;
     Acerca * dialog_;
