@@ -5,12 +5,14 @@
 #include <QTcpSocket>
 #include <QBuffer>
 #include <QImage>
+#include <QDir>
 
 class ClientSocket : public QObject
 {
     Q_OBJECT
 public:
     explicit ClientSocket(QTcpSocket * tcpSocket,QObject *parent = 0);
+    bool guardarImagen(qint64, QImage);
     ~ClientSocket();
 
 signals:
