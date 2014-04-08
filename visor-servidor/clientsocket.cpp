@@ -134,7 +134,6 @@ bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     tt.truncate(sI);
     qDebug() << tt;
     qDebug() << QDir::currentPath();
-    //QString path = QString("%1/%2/").arg(tt).arg();
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);

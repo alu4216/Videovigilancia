@@ -192,9 +192,9 @@ void ViewerWindow::image_s(const QImage &image)
              " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
     qDebug()<<"\n----------------------------------------------------------------";
 
+    tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),8);
     tcpsocket_->write(reinterpret_cast<char*>(&package.size),4);
     tcpsocket_->write(package.image,package.size);
-    tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),8);
     tcpsocket_->write(reinterpret_cast<char*>(&package.size_string),4);
     tcpsocket_->write(array,array.size());
 
