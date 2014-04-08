@@ -51,20 +51,22 @@ private slots:
     void on_actionSalir_triggered();
     void on_actionAbrirImagen_triggered();
     void on_actionAbrirVideo_triggered();
-    void movie_frame(const QRect& rect);
+    void on_actionCaptura_de_Red_triggered();
     void on_checkBox_stateChanged(int arg1);
     void on_actionAcercaDe_triggered();
     void on_Push_Pausa_clicked();
     void on_actionCapturar_triggered();
     void on_actionPreferencias_triggered();
+
     void actualizar_s(int);
-    void image_s(const QImage&);
     void capture_s();
-    void on_actionCaptura_de_Red_triggered();
     void conexionSocket_s();
+    void movie_frame(const QRect& rect);
+    void image_s(const QImage&);
     void mostrar_captura_s(const QImage&);
 
 private:
+
     Ui::ViewerWindow * ui;
     QMovie * movie_;
     Acerca * dialog_;
