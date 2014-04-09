@@ -24,14 +24,14 @@
 #include <QTcpServer>
 #include <QNetworkInterface>
 #include <QDataStream>
-
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
 #include "capturared.h"
 #include "clientsocket.h"
-
 
 
 namespace Ui {
@@ -83,6 +83,7 @@ private:
     int puerto_;
     QString ip_;
 
+    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
 };
 
 #endif // VIEWERWINDOW_H

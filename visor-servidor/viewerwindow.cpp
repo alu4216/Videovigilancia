@@ -24,6 +24,28 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     tcpServer_= NULL;
     capturaRed_= NULL;
     devices_ = QCamera::availableDevices();
+
+    //Asignación del nombre de la base de datos
+    db_.setDatabaseName("data.sqlite");
+    if (!db_.open()) {
+        QMessageBox::critical(NULL, tr("Error"),
+            tr("No se pudo acceder a los datos."));
+    }
+
+
+    QSqlQuery query;
+    query.exec("create table if not exists Datos"
+                       "(id integer primary key autoincrement, "
+                       "host varchar(100), "
+                       "timestamp long, "
+                       "ruta varchar(200))");
+
+
+    QStringList  listaTablas = db_.tables();
+    qDebug() << "Número de tablas creadas: " << listaTablas.size();
+    for (int i = 0; i < listaTablas.size(); i++){
+        qDebug() << "Tabla[" << i << "] => "<< listaTablas[i];
+    }
 }
 //Destructor
 ViewerWindow::~ViewerWindow()

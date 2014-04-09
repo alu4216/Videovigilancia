@@ -12,6 +12,8 @@ ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     connect(tcpSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
     connect(tcpSocket_,SIGNAL(error(QAbstractSocket::SocketError)),this,
                               SLOT(mostrarErrores(QAbstractSocket::SocketError)));
+
+
 }
 //Destructor
 ClientSocket::~ClientSocket()

@@ -9,6 +9,7 @@
 #include <QtEndian>
 #include <QDir>
 
+//#include "viewerwindow.h"
 
 class ClientSocket : public QObject
 {
@@ -36,6 +37,9 @@ private:
     bool leer_timestamp_;
     bool leer_size_string_;
     bool leer_string_;
+
+    QWidget * widget_;
+
 };
 
 #endif // CLIENTSOCKET_H
