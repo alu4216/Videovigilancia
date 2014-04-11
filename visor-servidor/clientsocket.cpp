@@ -11,7 +11,12 @@ ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     connect(tcpSocket_,SIGNAL(readyRead()),this,SLOT(readData()));
     connect(tcpSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
     connect(tcpSocket_,SIGNAL(error(QAbstractSocket::SocketError)),this,
-                              SLOT(mostrarErrores(QAbstractSocket::SocketError)));
+            SLOT(mostrarErrores(QAbstractSocket::SocketError)));
+
+    widget_=new QWidget();
+    layout_= new QGridLayout(widget_);
+    layout_->addWidget(&label_);
+    widget_->show();
 }
 //Destructor
 ClientSocket::~ClientSocket()
@@ -71,6 +76,10 @@ void ClientSocket::readData()
             image.loadFromData(data_,"JPEG");
             qDebug()<<"IMAGEN "<<image;
             data_.clear();
+
+            QPixmap pixmap;
+            pixmap=pixmap.fromImage(image);
+            label_.setPixmap(pixmap);
             //Estados de la lectura
             leer_cabecera_=false;
             leer_imagen_=false;
@@ -127,14 +136,14 @@ void ClientSocket::readData()
 
 void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
 {
-  QString string=tcpSocket_->errorString();
-  qDebug()<<"Entro a mostrar Errores\n";
-  qDebug()<<string;
-  QMessageBox ventana;
-  ventana.setWindowTitle("Mensaje de Error");
-  ventana.setText(string);
-  ventana.setStandardButtons(QMessageBox::Ok);
-  ventana.exec();
+    QString string=tcpSocket_->errorString();
+    qDebug()<<"Entro a mostrar Errores\n";
+    qDebug()<<string;
+    QMessageBox ventana;
+    ventana.setWindowTitle("Mensaje de Error");
+    ventana.setText(string);
+    ventana.setStandardButtons(QMessageBox::Ok);
+    ventana.exec();
 }
 
 bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
@@ -154,5 +163,6 @@ bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
-}
 
+
+}

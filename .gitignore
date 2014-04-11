@@ -1,5 +1,4 @@
-# Archivos .pro y .pro.user
-*.pro
+# Archivos .pro.user
 *.pro.user
 # Archivos de backup
 *~

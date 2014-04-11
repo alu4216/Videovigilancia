@@ -8,7 +8,9 @@
 #include <QMessageBox>
 #include <QtEndian>
 #include <QDir>
-
+#include <QWidget>
+#include <QLabel>
+#include <QGridLayout>
 
 class ClientSocket : public QObject
 {
@@ -30,7 +32,9 @@ private:
     QString string_;
     int imagen_size_;
     int string_size_;
-
+    QLabel label_;
+    QWidget * widget_;
+    QGridLayout * layout_;
     bool leer_cabecera_;
     bool leer_imagen_;
     bool leer_timestamp_;
