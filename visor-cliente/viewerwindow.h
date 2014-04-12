@@ -23,6 +23,7 @@
 #include <QImageWriter>
 #include <QDateTime>
 #include <QtEndian>
+#include <QSslSocket>
 
 
 #include "acerca.h"
@@ -46,6 +47,7 @@ public:
 
 private:
     void reconectar();
+    void send_data(const QPixmap &pixmap);
 
 private slots:
     void on_Salir_clicked();
@@ -71,7 +73,8 @@ private:
     PreferenciaDialog * preferencias_;
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;
-    QTcpSocket * tcpsocket_;
+    //QTcpSocket * tcpsocket_;
+    QSslSocket * sslSocket_;
     AjustesConexion * conexion_;
     QList<QByteArray> devices_;
     int check_;

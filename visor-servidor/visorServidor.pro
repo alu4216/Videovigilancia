@@ -19,14 +19,16 @@ SOURCES += main.cpp\
     preferenciadialog.cpp \
     capturebuffer.cpp \
     capturared.cpp \
-    clientsocket.cpp
+    clientsocket.cpp \
+    sslserver.cpp
 
 HEADERS  += viewerwindow.h \
     preferenciadialog.h \
     acerca.h \
     capturebuffer.h \
     capturared.h \
-    clientsocket.h
+    clientsocket.h \
+    sslserver.h
 
 FORMS    += viewerwindow.ui \
     acerca.ui \

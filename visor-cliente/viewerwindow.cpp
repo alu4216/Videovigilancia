@@ -22,7 +22,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     captureBuffer_ = NULL;
     dialog_ = NULL;
     conexion_=NULL;
-    tcpsocket_ = NULL;
+    sslSocket_ = NULL;
     estado_=false;
     devices_ = QCamera::availableDevices();
 }
@@ -34,7 +34,7 @@ ViewerWindow::~ViewerWindow()
     delete preferencias_;
     delete camera_;
     delete captureBuffer_;
-    delete tcpsocket_;
+    delete sslSocket_;
     delete conexion_;
 }
 //Cerrar el programa
@@ -164,9 +164,14 @@ void ViewerWindow::image_s(const QImage &image)
     paint.setPen(Qt::green);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     ui->label->setPixmap(pixmap);
-
-    //Lienas de código para enviar frame y metadatos al servidor
-    if(tcpsocket_!=NULL)//Si hay una conexión abierta
+    if(sslSocket_!=NULL)
+        send_data(pixmap);
+}
+void ViewerWindow::send_data(const QPixmap &pixmap)
+{
+    if(sslSocket_->state()!=3) //reconectar camara al servidor
+        reconectar();
+    else //Lienas de código para enviar frame y metadatos al servidor
     {
         //Procesar la imagen para enviarla por la red
         QBuffer buffer;//crea un buffer interno de tipo byte array donde guardar los bytes de las imagenes
@@ -178,7 +183,6 @@ void ViewerWindow::image_s(const QImage &image)
         imageWriter.setCompression(70); // compresión del la imagen
         imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
         QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
-
 
         QSettings settings;
         //Struct de información total a enviar
@@ -197,21 +201,15 @@ void ViewerWindow::image_s(const QImage &image)
         //Reconversión de la cadena para enviar como ByteArray
         QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
 
-
         qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
                   " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
         qDebug()<<"\n----------------------------------------------------------------";
 
-        if(tcpsocket_->state()!=3) //reconectar camara al servidor
-            reconectar();
-        else
-        {
-            tcpsocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
-            tcpsocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
-            tcpsocket_->write(package.image,package.size);
-            tcpsocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
-            tcpsocket_->write(array,array.size());
-        }
+        sslSocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
+        sslSocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
+        sslSocket_->write(package.image,package.size);
+        sslSocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
+        sslSocket_->write(array,array.size());
     }
 }
 //Ventana de preferencias de cámara.Seleccionar la cámara a utilizar
@@ -246,19 +244,25 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
 
-    if(tcpsocket_==NULL)
-        tcpsocket_ = new QTcpSocket(this);
+    if(sslSocket_==NULL)
+        sslSocket_ = new QSslSocket(this);
 
-    tcpsocket_->connectToHost(ip,puerto);
-    connect(tcpsocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+    sslSocket_->setProtocol(QSsl::SslV3);
+    sslSocket_->connectToHostEncrypted(ip,puerto);
+    sslSocket_->ignoreSslErrors();
+
+    connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+    qDebug()<<sslSocket_->state();
 }
 
 void ViewerWindow::reconectar()
 {
-    tcpsocket_->disconnect();
+    sslSocket_->disconnect();
     QSettings settings;
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
-    tcpsocket_->connectToHost(ip,puerto);
-    connect(tcpsocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
-}
+    sslSocket_->setProtocol(QSsl::SslV3);
+    sslSocket_->connectToHostEncrypted(ip,puerto);
+    sslSocket_->ignoreSslErrors();
+    connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+}                                                    //OJO AQUI, ***

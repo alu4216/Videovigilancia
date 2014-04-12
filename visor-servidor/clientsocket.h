@@ -2,7 +2,7 @@
 #define CLIENTSOCKET_H
 
 #include <QObject>
-#include <QTcpSocket>
+#include <QSslSocket>
 #include <QBuffer>
 #include <QImage>
 #include <QMessageBox>
@@ -16,7 +16,7 @@ class ClientSocket : public QObject
 {
     Q_OBJECT
 public:
-    explicit ClientSocket(QTcpSocket * tcpSocket,QObject *parent = 0);
+    explicit ClientSocket(QSslSocket * sslSocket_,QObject *parent = 0);
     void guardarImagen(qint64, QImage);
     ~ClientSocket();
 
@@ -26,7 +26,7 @@ public slots:
     void mostrarErrores(QAbstractSocket::SocketError);
 
 private:
-    QTcpSocket *tcpSocket_;
+    QSslSocket *sslSocket_;
     QByteArray data_;
     qint64 timestamp_;
     QString string_;

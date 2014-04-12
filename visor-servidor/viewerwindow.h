@@ -24,6 +24,7 @@
 #include <QTcpServer>
 #include <QNetworkInterface>
 #include <QDataStream>
+#include <QSslSocket>
 
 
 #include "acerca.h"
@@ -31,6 +32,7 @@
 #include "capturebuffer.h"
 #include "capturared.h"
 #include "clientsocket.h"
+#include "sslserver.h"
 
 
 
@@ -60,7 +62,6 @@ private slots:
 
     void actualizar_s(int);
     void capture_s();
-    void conexionSocket_s();
     void movie_frame(const QRect& rect);
     void image_s(const QImage&);
 
@@ -72,11 +73,11 @@ private:
     PreferenciaDialog * preferencias_;
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;
-    QTcpServer * tcpServer_;
+    SslServer * sslServer_;
     CapturaRed * capturaRed_;
 
     QList<QByteArray> devices_;
-    QList<ClientSocket*> clients_;
+
     int check_;
     int indice_;
     int puerto_;

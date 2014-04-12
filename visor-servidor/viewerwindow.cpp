@@ -21,7 +21,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     preferencias_ = NULL;
     captureBuffer_ = NULL;
     dialog_ = NULL;
-    tcpServer_= NULL;
+    sslServer_= NULL;
     capturaRed_= NULL;
     devices_ = QCamera::availableDevices();
 }
@@ -34,8 +34,7 @@ ViewerWindow::~ViewerWindow()
     delete camera_;
     delete captureBuffer_;
     delete capturaRed_;
-    delete tcpServer_;
-    clients_.clear();
+    delete sslServer_;
 }
 //Cerrar el programa
 void ViewerWindow::on_Salir_clicked()
@@ -198,7 +197,7 @@ void ViewerWindow::capture_s()
 {
     QSettings settings;
     int puerto=settings.value("Puertos/puerto",15000).toInt();
-    tcpServer_ = new QTcpServer(this);
+    sslServer_= new SslServer();
 
     QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
@@ -213,28 +212,18 @@ void ViewerWindow::capture_s()
     if (ipAddress.isEmpty())
         ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
     //Escucha peticiones
-    if (!tcpServer_->listen(QHostAddress::Any, puerto)) {
+
+    if (!sslServer_->listen(QHostAddress::Any, puerto)) {
         QMessageBox::critical(this, tr("Servidor"),
                               tr("Imposible iniciars conexión: %1.")
-                              .arg(tcpServer_->errorString()));
+                              .arg(sslServer_->errorString()));
         close();
         return;
     }
     ui->label->setText(tr("El servidor está corriendo en la: \n\nIP: %1\nPuerto: %2\n\n"
                           "Envia imágenes ahora.").arg(ipAddress).arg(puerto));
 
-    connect(tcpServer_, SIGNAL(newConnection()), this, SLOT(conexionSocket_s()));
 }
-//Administrar conexiones al servidor
-void ViewerWindow::conexionSocket_s()
-{
-    qDebug()<<"CONECTADO CON EL SERVIDOR";
-    while(tcpServer_->hasPendingConnections())
-    {
-        ClientSocket *client=new ClientSocket(tcpServer_->nextPendingConnection(),this);
-        clients_.append(client);
-        connect(client,SIGNAL(s_mostrar_captura(QImage)),this,SLOT(mostrar_captura_s(QImage)));
-    }
-}
+
 
 
