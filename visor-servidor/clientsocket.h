@@ -17,14 +17,14 @@ class ClientSocket : public QObject
     Q_OBJECT
 public:
     explicit ClientSocket(QTcpSocket * tcpSocket,QObject *parent = 0);
-     bool guardarImagen(qint64, QImage);
+    void guardarImagen(qint64, QImage);
     ~ClientSocket();
 
-signals:
-    void s_mostrar_captura(const QImage&);
+
 public slots:
     void readData();
     void mostrarErrores(QAbstractSocket::SocketError);
+
 private:
     QTcpSocket *tcpSocket_;
     QByteArray data_;
@@ -40,6 +40,7 @@ private:
     bool leer_timestamp_;
     bool leer_size_string_;
     bool leer_string_;
+    bool mostrarImagen_;
 };
 
 #endif // CLIENTSOCKET_H

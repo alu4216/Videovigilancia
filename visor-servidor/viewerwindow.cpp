@@ -236,14 +236,5 @@ void ViewerWindow::conexionSocket_s()
         connect(client,SIGNAL(s_mostrar_captura(QImage)),this,SLOT(mostrar_captura_s(QImage)));
     }
 }
-//Mostrara imagen recojida del socket
-void ViewerWindow::mostrar_captura_s(const QImage &image)
-{
-    QPixmap pixmap;
-    pixmap=pixmap.fromImage(image);
-    ui->label->setPixmap(pixmap);
-
-}
-
 
 

@@ -16,12 +16,17 @@ ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     widget_=new QWidget();
     layout_= new QGridLayout(widget_);
     layout_->addWidget(&label_);
-    widget_->show();
+    label_.setScaledContents(true);
+    mostrarImagen_=true;
+
 }
 //Destructor
 ClientSocket::~ClientSocket()
 {
     delete tcpSocket_;
+    delete layout_;
+    delete widget_;
+
 }
 //Leer datos del socket
 void ClientSocket::readData()
@@ -85,12 +90,14 @@ void ClientSocket::readData()
             leer_imagen_=false;
             leer_timestamp_=false;
             leer_size_string_=true;
-
+            if(mostrarImagen_==true)//para que se habra la ventana inicialmente solo si
+            {                       // hay imagenes que mostrar
+                mostrarImagen_=false;
+                widget_->show();
+            }
             //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
             guardarImagen(timestamp_, image);
 
-
-            emit s_mostrar_captura(image);
         }
     }
 
@@ -146,7 +153,7 @@ void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
     ventana.exec();
 }
 
-bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
+void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     qint32 szHx = 16;
     qint32 s1 = 4;
     qint32 s2 = 8;
@@ -163,6 +170,5 @@ bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
-
 
 }
