@@ -4,7 +4,6 @@
 ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     QObject(parent),sslSocket_(sslSocket_)
 {
-    qDebug()<<"ENTRO a cliente"<<"con estado"<<sslSocket_->state();
     leer_cabecera_=false;
     leer_imagen_=false;
     leer_timestamp_=true;
@@ -33,7 +32,6 @@ ClientSocket::~ClientSocket()
 //Leer datos del socket
 void ClientSocket::readData()
 {
-    qDebug()<<"ENTRO A READDATA";
     int *size;
     qint64 *tam;
     if(leer_timestamp_==true)//Leer tiempo

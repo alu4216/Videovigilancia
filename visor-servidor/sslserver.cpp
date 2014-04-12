@@ -35,9 +35,7 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
             qDebug()<<key_;
         }
         else
-        {
            qDebug() <<"Error key: "<< file_key.errorString();
-        }
 
         //leer certificado
         QFile file_cert(cert);
@@ -48,10 +46,7 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
             qDebug()<<certificate_;
         }
         else
-        {
             qDebug() <<"Error cert: "<< file_cert.errorString();
-        }
-
 
         //Configuración del cifrado
         QSslKey ssl_key(key_,QSsl::Rsa);
@@ -67,7 +62,6 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
         errors.append(QSslError::SelfSignedCertificate);
         errors.append(QSslError::CertificateUntrusted);
         sslSocket->ignoreSslErrors(errors);
-
 
         //Create new client with the established connection
         ClientSocket *client=new ClientSocket(sslSocket,this);

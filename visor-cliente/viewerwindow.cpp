@@ -142,10 +142,13 @@ void ViewerWindow::on_actionCapturar_triggered()
         movie_=NULL;
     }
 
-    camera_ = new QCamera(devices_[indice_]);
-    captureBuffer_ = new CaptureBuffer();
-    camera_->setViewfinder(captureBuffer_);
-    camera_->start();
+    if(captureBuffer_==NULL) captureBuffer_ = new CaptureBuffer();
+    if(camera_==NULL)
+    {
+        camera_ = new QCamera(devices_[indice_]);
+        camera_->setViewfinder(captureBuffer_);
+        camera_->start();
+    }
     //Conectar señales
     connect(captureBuffer_,SIGNAL(s_image(QImage)),this,SLOT(image_s(QImage)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
@@ -167,6 +170,7 @@ void ViewerWindow::image_s(const QImage &image)
     if(sslSocket_!=NULL)
         send_data(pixmap);
 }
+//Enviar datos por el socket
 void ViewerWindow::send_data(const QPixmap &pixmap)
 {
     if(sslSocket_->state()!=3) //reconectar camara al servidor
@@ -237,6 +241,7 @@ void ViewerWindow::on_actionAjustes_Conexion_triggered()
     conexion_= new AjustesConexion();
     conexion_->show();
 }
+
 //Conectar con el servidor y activar el envío de datos
 void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 {
@@ -250,11 +255,10 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     sslSocket_->setProtocol(QSsl::SslV3);
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
-
     connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
-    qDebug()<<sslSocket_->state();
 }
 
+//Reconectar con el servidor automáticamente
 void ViewerWindow::reconectar()
 {
     sslSocket_->disconnect();
@@ -265,4 +269,4 @@ void ViewerWindow::reconectar()
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
     connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
-}                                                    //OJO AQUI, ***
+}
