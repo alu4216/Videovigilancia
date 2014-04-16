@@ -161,16 +161,19 @@ void ViewerWindow::image_s(const QImage &image)
     //Procesar la image para poder pintar sobre ella la hora
     QTime time = QTime::currentTime();
     QString timeString = time.toString();
+    QSettings settings;
+    QString name=settings.value("Network/Camara","INFO").toString();
     QPixmap pixmap;
     pixmap=pixmap.fromImage(image);
     QPainter paint(&pixmap);
     paint.setPen(Qt::green);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
+    paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignLeft,name,0);
     ui->label->setPixmap(pixmap);
     if(sslSocket_!=NULL)
         send_data(pixmap);
 }
-//Enviar datos por el socket
+//Enviar datos por el socket cifrado
 void ViewerWindow::send_data(const QPixmap &pixmap)
 {
     if(sslSocket_->state()!=3) //reconectar camara al servidor

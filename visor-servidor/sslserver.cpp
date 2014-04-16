@@ -5,13 +5,13 @@ SslServer::SslServer(QObject *parent) :
     QTcpServer(parent)
 {
     QSettings settings;
-    settings.setValue("SSl/key","/home/josue/QTproyectos/proyectoConjunto/videovigilancia-1314-g4-/SSL/server.key");
-    settings.setValue("SSL/certificado","/home/josue/QTproyectos/proyectoConjunto/videovigilancia-1314-g4-/SSL/server.crt");
+    settings.setValue("SSl/key","../SSL/server.key");
+    settings.setValue("SSL/certificado","../SSL/server.crt");
 }
 //Destructor
 SslServer::~SslServer()
 {
-  clients_.clear();
+    clients_.clear();
 }
 //Sobrecargamos el método incomingConnecction
 void SslServer::incomingConnection(qintptr socketDescriptor)
@@ -26,7 +26,7 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
         cert = settings.value("SSL/certificado").toString();
         key = settings.value("SSl/key").toString();
 
-        //leer clave privada
+        //leer clave
         QFile file_key(key);
         if(file_key.open(QIODevice::ReadOnly))
         {
@@ -34,8 +34,8 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
             file_key.close();
             qDebug()<<key_;
         }
-        else
-           qDebug() <<"Error key: "<< file_key.errorString();
+        else //fallo de lectura de la clave
+            qDebug() <<"Error key: "<< file_key.errorString();
 
         //leer certificado
         QFile file_cert(cert);
@@ -45,7 +45,7 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
             file_cert.close();
             qDebug()<<certificate_;
         }
-        else
+        else //fallo de lectura del certificado
             qDebug() <<"Error cert: "<< file_cert.errorString();
 
         //Configuración del cifrado
@@ -66,10 +66,7 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
         //Create new client with the established connection
         ClientSocket *client=new ClientSocket(sslSocket,this);
         clients_.append(client);
-
     }
     else
-    {
         delete sslSocket;
-    }
 }
