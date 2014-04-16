@@ -62,8 +62,10 @@ private slots:
 
     void actualizar_s(int);
     void capture_s();
+    void conexionSocket_s();
     void movie_frame(const QRect& rect);
     void image_s(const QImage&);
+    void mostrar_captura_s(const QImage&);
 
 private:
 

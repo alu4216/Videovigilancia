@@ -25,6 +25,20 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     sslSocket_ = NULL;
     estado_=false;
     devices_ = QCamera::availableDevices();
+
+
+    ///////////parte de prueba de deteccion//////////////
+
+
+    // Registra QVector<QRect> como tipo en qt para reconocerlo al hacer connect
+    qRegisterMetaType< QVector<QRect> >("QVector<QRect>");
+    // Capturar la imagen cuando cambia en el video
+    /*connect(&movie_,SIGNAL(updated(const QRect&)),
+                     this,SLOT(movie_frame(const QRect&)));
+
+    // Pasar la petición de procesar el frame
+    connect(this, SIGNAL(Procesar_Imagen(const QImage &)),
+        &imageProcesor_, SLOT(Procesador_imagen(const QImage &)));*/
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -103,6 +117,9 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
 
         //coneccionóde señales
         connect(movie_, SIGNAL(updated(const QRect&)),this, SLOT(movie_frame(const QRect&)));
+        //señal para deteccion                             //&
+        connect(this, SIGNAL(Procesar_Imagen(const QImage &)),imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
+
         connect(ui->push_Start, SIGNAL(clicked()), movie_, SLOT(start()));
         connect(ui->push_Stop, SIGNAL(clicked()), movie_, SLOT(stop()));
         connect(ui->Push_Pausa,SIGNAL(clicked()),this,SLOT(on_Push_Pausa_clicked()));
@@ -119,6 +136,10 @@ void ViewerWindow::movie_frame(const QRect& )
 {
     QPixmap pixmap = movie_->currentPixmap();
     ui->label->setPixmap(pixmap);
+
+    QImage img = pixmap.toImage();//movie_.currentImage();
+    emit Procesar_Imagen(img);
+
 }
 //Guardar el estado del checbox del formulario
 void ViewerWindow::on_checkBox_stateChanged(int arg1)
@@ -153,7 +174,7 @@ void ViewerWindow::on_actionCapturar_triggered()
     connect(captureBuffer_,SIGNAL(s_image(QImage)),this,SLOT(image_s(QImage)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
     connect(ui->push_Stop,SIGNAL(clicked()),camera_,SLOT(stop()));
-
+    connect(this, SIGNAL(Procesar_Imagen(const QImage &)),imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
 }
 //Procesar los frame recibidos por la cam para mostrarlos y modificarlo(pintar sobre ellos)
 void ViewerWindow::image_s(const QImage &image)
@@ -163,13 +184,15 @@ void ViewerWindow::image_s(const QImage &image)
     QString timeString = time.toString();
     QSettings settings;
     QString name=settings.value("Network/Camara","INFO").toString();
+    emit Procesar_Imagen(image);//deteccion
+
     QPixmap pixmap;
     pixmap=pixmap.fromImage(image);
     QPainter paint(&pixmap);
     paint.setPen(Qt::green);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignLeft,name,0);
-    ui->label->setPixmap(pixmap);
+
     if(sslSocket_!=NULL)
         send_data(pixmap);
 }
@@ -179,6 +202,11 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
     if(sslSocket_->state()!=3) //reconectar camara al servidor
         reconectar();
     else //Lienas de código para enviar frame y metadatos al servidor
+
+
+
+    //Lienas de código para enviar frame y metadatos al servidor
+    if(tcpsocket_!=NULL)//Si hay una conexión abierta
     {
         //Procesar la imagen para enviarla por la red
         QBuffer buffer;//crea un buffer interno de tipo byte array donde guardar los bytes de las imagenes
@@ -190,6 +218,7 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
         imageWriter.setCompression(70); // compresión del la imagen
         imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
         QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
+
 
         QSettings settings;
         //Struct de información total a enviar
@@ -208,15 +237,21 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
         //Reconversión de la cadena para enviar como ByteArray
         QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
 
+
         qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
                   " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
         qDebug()<<"\n----------------------------------------------------------------";
 
-        sslSocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
-        sslSocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
-        sslSocket_->write(package.image,package.size);
-        sslSocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
-        sslSocket_->write(array,array.size());
+        if(sslsocket_->state()!=3) //reconectar camara al servidor
+            reconectar();
+        else
+        {
+            sslSocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
+            sslSocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
+            sslSocket_->write(package.image,package.size);
+            sslSocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
+            sslSocket_->write(array,array.size());
+        }
     }
 }
 //Ventana de preferencias de cámara.Seleccionar la cámara a utilizar

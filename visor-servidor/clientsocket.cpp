@@ -19,7 +19,6 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     layout_->addWidget(&label_);
     label_.setScaledContents(true);
     mostrarImagen_=true;
-
 }
 //Destructor
 ClientSocket::~ClientSocket()
@@ -27,11 +26,11 @@ ClientSocket::~ClientSocket()
     delete sslSocket_;
     //delete layout_;
     //delete widget_;
-
 }
 //Leer datos del socket
 void ClientSocket::readData()
 {
+
     int *size;
     qint64 *tam;
     if(leer_timestamp_==true)//Leer tiempo
@@ -97,7 +96,7 @@ void ClientSocket::readData()
             }
             //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
             guardarImagen(timestamp_, image);
-
+            emit s_mostrar_captura(image);
         }
     }
 
@@ -126,6 +125,7 @@ void ClientSocket::readData()
         if(sslSocket_->bytesAvailable()>=string_size_)
         {
             data_=sslSocket_->read(string_size_);
+            data_=tcpSocket_->read(string_size_);
             string_=QString::fromLatin1(data_.data(),string_size_);
             qDebug()<<"CADENA: "<<string_;
             qDebug()<<"-------------------------------------------";
@@ -172,3 +172,4 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
 }
+

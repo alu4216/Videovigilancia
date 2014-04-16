@@ -24,13 +24,13 @@
 #include <QDateTime>
 #include <QtEndian>
 #include <QSslSocket>
-
+#include <QThread>
 
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
 #include "ajustesconexion.h"
-
+#include "deteccion.h"
 
 
 namespace Ui {
@@ -48,6 +48,9 @@ public:
 private:
     void reconectar();
     void send_data(const QPixmap &pixmap);
+
+signals:
+    void Procesar_Imagen(const QImage &image);
 
 private slots:
     void on_Salir_clicked();
@@ -73,8 +76,8 @@ private:
     PreferenciaDialog * preferencias_;
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;
-    //QTcpSocket * tcpsocket_;
     QSslSocket * sslSocket_;
+    QTcpSocket * tcpsocket_;
     AjustesConexion * conexion_;
     QList<QByteArray> devices_;
     int check_;
@@ -90,6 +93,7 @@ private:
         qint32 size_string;
         QByteArray image;
     };
+    Deteccion imageProcesor_;
 
     //QList <Package>lista;
 };
