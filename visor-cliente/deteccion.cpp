@@ -15,6 +15,7 @@ void Deteccion::cierre(const bool &x)
 
 void Deteccion::Procesador_imagen(const QImage &image)
 {
+
     if(!cierre_)
     {
         //procesa la imagen

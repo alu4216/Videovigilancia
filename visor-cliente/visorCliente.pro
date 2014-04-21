@@ -6,7 +6,7 @@
 
 QT       += core gui
 QT       += multimedia multimediawidgets
-
+CONFIG +=qt
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = visor
@@ -37,7 +37,5 @@ include(QtOpenCV.pri)
 
 add_opencv_modules(core video imgproc)
 
-
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += opencv
->>>>>>> primera version,con error gui

@@ -25,7 +25,6 @@
 #include <QtEndian>
 #include <QSslSocket>
 #include <QThread>
-
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
@@ -68,6 +67,8 @@ private slots:
     void movie_frame(const QRect& rect);
     void actualizar_s(int);
     void image_s(const QImage&);
+    void vectorImage(const QImage img, const QVector<QRect> &rectangulos);
+
 
 private:
     Ui::ViewerWindow * ui;
@@ -94,6 +95,7 @@ private:
         QByteArray image;
     };
     Deteccion imageProcesor_;
+    QThread hilo_;
 
     //QList <Package>lista;
 };

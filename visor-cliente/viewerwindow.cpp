@@ -25,20 +25,35 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     sslSocket_ = NULL;
     estado_=false;
     devices_ = QCamera::availableDevices();
+    movie_=new QMovie();
 
 
-    ///////////parte de prueba de deteccion//////////////
+    //parte de prueba de deteccion//////////////
+
 
 
     // Registra QVector<QRect> como tipo en qt para reconocerlo al hacer connect
     qRegisterMetaType< QVector<QRect> >("QVector<QRect>");
-    // Capturar la imagen cuando cambia en el video
-    /*connect(&movie_,SIGNAL(updated(const QRect&)),
-                     this,SLOT(movie_frame(const QRect&)));
+    // qRegisterMetaType< QImage >("QImage");
+
+    // Capturar la imagen cuando cambia en el video esta esta abajo ya en abrir video
+    //connect(movie_,SIGNAL(updated(const QRect&)),this,SLOT(movie_frame(const QRect&)));
 
     // Pasar la petición de procesar el frame
-    connect(this, SIGNAL(Procesar_Imagen(const QImage &)),
-        &imageProcesor_, SLOT(Procesador_imagen(const QImage &)));*/
+    connect(this, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_,
+            SLOT(Procesador_imagen(const QImage &)));
+
+    // Ser notificado cuando el frame ha sido procesado
+    connect(&imageProcesor_, SIGNAL(Mandar_imagen(const QImage &,const QVector<QRect> &)),this,
+            SLOT(vectorImage(const QImage&,const QVector<QRect> &)));
+
+
+    imageProcesor_.moveToThread(&hilo_);// Migrar la instancia de imageProcesor al hilo de trabajo
+
+
+    hilo_.start();// Iniciar el hilo de trabajo
+
+    qDebug()<<"hilo";
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -50,6 +65,9 @@ ViewerWindow::~ViewerWindow()
     delete captureBuffer_;
     delete sslSocket_;
     delete conexion_;
+    imageProcesor_.cierre(true);
+    hilo_.quit();
+    hilo_.wait();
 }
 //Cerrar el programa
 void ViewerWindow::on_Salir_clicked()
@@ -123,6 +141,11 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
         connect(ui->push_Start, SIGNAL(clicked()), movie_, SLOT(start()));
         connect(ui->push_Stop, SIGNAL(clicked()), movie_, SLOT(stop()));
         connect(ui->Push_Pausa,SIGNAL(clicked()),this,SLOT(on_Push_Pausa_clicked()));
+
+
+
+
+
     }
 }
 //Pausar el vídeo o captura de imagenes
@@ -133,14 +156,28 @@ void ViewerWindow::on_Push_Pausa_clicked()
 }
 //Mosrar frame a frame el vídeo
 void ViewerWindow::movie_frame(const QRect& )
-{
+{qDebug()<<"movieframe";
     QPixmap pixmap = movie_->currentPixmap();
-    ui->label->setPixmap(pixmap);
 
+    //ui->label->setPixmap(pixmap);
     QImage img = pixmap.toImage();//movie_.currentImage();
     emit Procesar_Imagen(img);
 
+
+    /*/le manda al hilo la imagen para procesarla
+    QImage img =movie_->currentImage();
+    qDebug() << "Mandando a procesar imagen";
+    emit Procesar_Imagen(img);*/
+
+
 }
+void ViewerWindow::vectorImage(const QImage img, const QVector<QRect> &rectangulos)
+{qDebug()<<"vectorimage";
+    QPixmap pixmap;
+    pixmap.convertFromImage(img);
+    ui->label->setPixmap(pixmap);
+}
+
 //Guardar el estado del checbox del formulario
 void ViewerWindow::on_checkBox_stateChanged(int arg1)
 {
@@ -175,10 +212,16 @@ void ViewerWindow::on_actionCapturar_triggered()
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
     connect(ui->push_Stop,SIGNAL(clicked()),camera_,SLOT(stop()));
     connect(this, SIGNAL(Procesar_Imagen(const QImage &)),imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
+
+    //connect(this, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
+
 }
 //Procesar los frame recibidos por la cam para mostrarlos y modificarlo(pintar sobre ellos)
 void ViewerWindow::image_s(const QImage &image)
 {
+    qDebug()<<"image_s";
+    //emit Procesar_Imagen(image);//deteccion
+
     //Procesar la image para poder pintar sobre ella la hora
     QTime time = QTime::currentTime();
     QString timeString = time.toString();
