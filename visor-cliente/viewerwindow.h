@@ -24,12 +24,16 @@
 #include <QDateTime>
 #include <QtEndian>
 #include <QSslSocket>
+#include <QImage>
+
 #include <QThread>
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
 #include "ajustesconexion.h"
 #include "deteccion.h"
+
+#include "cvmatandqimage.h"
 
 
 namespace Ui {
@@ -66,8 +70,9 @@ private slots:
 
     void movie_frame(const QRect& rect);
     void actualizar_s(int);
-    void image_s(const QImage&);
-    void vectorImage(const QImage img, const QVector<QRect> &rectangulos);
+    void image_s(const QImage&, const QVector<QRect> &rectangulo);
+
+    //void vectorImage(const QImage img, const QVector<QRect> &rectangulo);
 
 
 private:

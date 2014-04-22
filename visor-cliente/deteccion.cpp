@@ -15,9 +15,9 @@ void Deteccion::cierre(const bool &x)
 
 void Deteccion::Procesador_imagen(const QImage &image)
 {
-
     if(!cierre_)
     {
+
         //procesa la imagen
         cv::Mat img = QtOcv::image2Mat(image);//convierte la imagen en cv::Mat
 
@@ -37,8 +37,9 @@ void Deteccion::Procesador_imagen(const QImage &image)
             cv::Rect recta = cv::boundingRect(*i);
             QRect qrecta(recta.x,recta.y,recta.width,recta.height);
             VRect.push_back(qrecta);
+
        }
-        qDebug() << "Imagen procesada";
+
         //manda la imagen ya procesada
         emit Mandar_imagen(image,VRect);
     }

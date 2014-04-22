@@ -34,18 +34,12 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
 
     // Registra QVector<QRect> como tipo en qt para reconocerlo al hacer connect
     qRegisterMetaType< QVector<QRect> >("QVector<QRect>");
-    // qRegisterMetaType< QImage >("QImage");
-
-    // Capturar la imagen cuando cambia en el video esta esta abajo ya en abrir video
-    //connect(movie_,SIGNAL(updated(const QRect&)),this,SLOT(movie_frame(const QRect&)));
 
     // Pasar la petición de procesar el frame
-    connect(this, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_,
-            SLOT(Procesador_imagen(const QImage &)));
+    connect(this, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_,SLOT(Procesador_imagen(const QImage &)));
 
     // Ser notificado cuando el frame ha sido procesado
-    connect(&imageProcesor_, SIGNAL(Mandar_imagen(const QImage &,const QVector<QRect> &)),this,
-            SLOT(vectorImage(const QImage&,const QVector<QRect> &)));
+    connect(&imageProcesor_, SIGNAL(Mandar_imagen(const QImage &,const QVector<QRect> &)),this,SLOT(image_s(const QImage&,const QVector<QRect> &)));
 
 
     imageProcesor_.moveToThread(&hilo_);// Migrar la instancia de imageProcesor al hilo de trabajo
@@ -156,27 +150,12 @@ void ViewerWindow::on_Push_Pausa_clicked()
 }
 //Mosrar frame a frame el vídeo
 void ViewerWindow::movie_frame(const QRect& )
-{qDebug()<<"movieframe";
-    QPixmap pixmap = movie_->currentPixmap();
-
-    //ui->label->setPixmap(pixmap);
-    QImage img = pixmap.toImage();//movie_.currentImage();
-    emit Procesar_Imagen(img);
-
-
-    /*/le manda al hilo la imagen para procesarla
+{
+    //le manda al hilo la imagen para procesarla
     QImage img =movie_->currentImage();
-    qDebug() << "Mandando a procesar imagen";
-    emit Procesar_Imagen(img);*/
-
-
+    emit Procesar_Imagen(img);
 }
-void ViewerWindow::vectorImage(const QImage img, const QVector<QRect> &rectangulos)
-{qDebug()<<"vectorimage";
-    QPixmap pixmap;
-    pixmap.convertFromImage(img);
-    ui->label->setPixmap(pixmap);
-}
+
 
 //Guardar el estado del checbox del formulario
 void ViewerWindow::on_checkBox_stateChanged(int arg1)
@@ -208,19 +187,21 @@ void ViewerWindow::on_actionCapturar_triggered()
         camera_->start();
     }
     //Conectar señales
-    connect(captureBuffer_,SIGNAL(s_image(QImage)),this,SLOT(image_s(QImage)));
+
+    connect(captureBuffer_,SIGNAL(s_image(const QImage&)),&imageProcesor_,SLOT(Procesador_imagen(const QImage &)));
+    //connect(captureBuffer_,SIGNAL(s_image(QImage)),this,SLOT(image_s(QImage)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
     connect(ui->push_Stop,SIGNAL(clicked()),camera_,SLOT(stop()));
     connect(this, SIGNAL(Procesar_Imagen(const QImage &)),imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
 
-    //connect(this, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
+    //connect(captureBuffer_, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_, SLOT(Procesador_imagen(const QImage &)));
 
 }
+
+
 //Procesar los frame recibidos por la cam para mostrarlos y modificarlo(pintar sobre ellos)
-void ViewerWindow::image_s(const QImage &image)
+void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
 {
-    qDebug()<<"image_s";
-    //emit Procesar_Imagen(image);//deteccion
 
     //Procesar la image para poder pintar sobre ella la hora
     QTime time = QTime::currentTime();
@@ -247,6 +228,16 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
     else //Lienas de código para enviar frame y metadatos al servidor
 
 
+    //dibujo rectangulo
+    paint.setPen(Qt::green);
+    int i=0;
+    while(rectangulo.size() >= i){//recorro vector del rectangulo
+       QRect rect=rectangulo.value(i);
+        paint.drawRect(rect);
+        i++;
+    }
+
+    ui->label->setPixmap(pixmap);
 
     //Lienas de código para enviar frame y metadatos al servidor
     if(tcpsocket_!=NULL)//Si hay una conexión abierta
