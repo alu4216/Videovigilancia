@@ -37,5 +37,3 @@ include(QtOpenCV.pri)
 
 add_opencv_modules(core video imgproc)
 
-unix: CONFIG += link_pkgconfig
-unix: PKGCONFIG += opencv

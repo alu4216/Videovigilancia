@@ -96,7 +96,7 @@ void ClientSocket::readData()
             }
             //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
             guardarImagen(timestamp_, image);
-            emit s_mostrar_captura(image);
+
         }
     }
 
@@ -125,7 +125,6 @@ void ClientSocket::readData()
         if(sslSocket_->bytesAvailable()>=string_size_)
         {
             data_=sslSocket_->read(string_size_);
-            data_=tcpSocket_->read(string_size_);
             string_=QString::fromLatin1(data_.data(),string_size_);
             qDebug()<<"CADENA: "<<string_;
             qDebug()<<"-------------------------------------------";

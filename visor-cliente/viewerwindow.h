@@ -83,7 +83,6 @@ private:
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;
     QSslSocket * sslSocket_;
-    QTcpSocket * tcpsocket_;
     AjustesConexion * conexion_;
     QList<QByteArray> devices_;
     int check_;
