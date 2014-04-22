@@ -27,11 +27,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     devices_ = QCamera::availableDevices();
     movie_=new QMovie();
 
-
-    //parte de prueba de deteccion//////////////
-
-
-
     // Registra QVector<QRect> como tipo en qt para reconocerlo al hacer connect
     qRegisterMetaType< QVector<QRect> >("QVector<QRect>");
 
@@ -41,9 +36,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     // Ser notificado cuando el frame ha sido procesado
     connect(&imageProcesor_, SIGNAL(Mandar_imagen(const QImage &,const QVector<QRect> &)),this,SLOT(image_s(const QImage&,const QVector<QRect> &)));
 
-
     imageProcesor_.moveToThread(&hilo_);// Migrar la instancia de imageProcesor al hilo de trabajo
-
 
     hilo_.start();// Iniciar el hilo de trabajo
 
