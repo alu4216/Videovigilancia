@@ -14,7 +14,8 @@ PreferenciaDialog::PreferenciaDialog(const QList<QByteArray> &devices,QWidget * 
             <<devices.size();
     QSettings settings;
     int i=0;
-    do {
+    do
+    {
         ui->comboBox->addItem(QCamera::deviceDescription(devices[i]));
         i++;
     }while(i<devices.size());

@@ -46,9 +46,9 @@ private:
     bool leer_timestamp_;
     bool leer_size_string_;
     bool leer_string_;
-
-    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
     bool mostrarImagen_;
+    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
+
 };
 
 #endif // CLIENTSOCKET_H

@@ -81,14 +81,11 @@ private:
     CaptureBuffer * captureBuffer_;
     SslServer * sslServer_;
     CapturaRed * capturaRed_;
-
     QList<QByteArray> devices_;
-
     int check_;
     int indice_;
     int puerto_;
     QString ip_;
-
     QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
 };
 

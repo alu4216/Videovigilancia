@@ -5,16 +5,11 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     QObject(parent),sslSocket_(sslSocket_)
 {
     db_.setDatabaseName("data.sqlite");
-    if (!db_.open()) {
+    if (!db_.open())
+    {
         QMessageBox::critical(NULL, tr("Error"),
             tr("No se pudo acceder a los datos."));
     }
-    QStringList  listaTablas = db_.tables();
-    qDebug() << "Número de tablas creadas: " << listaTablas.size();
-    for (int i = 0; i < listaTablas.size(); i++){
-        qDebug() << "Tabla[" << i << "] => "<< listaTablas[i];
-    }
-
     leer_cabecera_=false;
     leer_imagen_=false;
     leer_timestamp_=true;
@@ -42,7 +37,6 @@ ClientSocket::~ClientSocket()
 //Leer datos del socket
 void ClientSocket::readData()
 {
-
     int *size;
     qint64 *tam;
     if(leer_timestamp_==true)//Leer tiempo
@@ -82,7 +76,8 @@ void ClientSocket::readData()
             leer_size_string_=false;
 
         }
-    }//Estado leer imagen
+    }
+    //Estado leer imagen
     if(leer_imagen_ ==true)
     {
         if((sslSocket_->bytesAvailable())>=imagen_size_)
@@ -100,16 +95,13 @@ void ClientSocket::readData()
             leer_timestamp_=false;
             leer_size_string_=true;
 
-
             if(mostrarImagen_==true)//para que se habra la ventana inicialmente solo si
             {                       // hay imagenes que mostrar
                 mostrarImagen_=false;
                 //Abrir ventana para mostrar imagen
                 widget_->show();
             }
-            //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
             guardarImagen(timestamp_, image);
-
         }
     }
 
@@ -184,7 +176,6 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
-
     ttImage2.push_front("/");
     ttImage2.push_front(QDir::currentPath());
 
@@ -198,21 +189,3 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     query.bindValue(":ruta", ttImage2);
     query.exec();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

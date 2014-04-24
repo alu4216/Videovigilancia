@@ -26,14 +26,12 @@
 #include <QHostInfo>
 #include <QSslSocket>
 #include <QImage>
-
 #include <QThread>
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
 #include "ajustesconexion.h"
 #include "deteccion.h"
-
 #include "cvmatandqimage.h"
 
 

@@ -29,21 +29,14 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     db_.setDatabaseName("data.sqlite");
     if (!db_.open()) {
         QMessageBox::critical(NULL, tr("Error"),
-            tr("No se pudo acceder a los datos."));
+                              tr("No se pudo acceder a los datos."));
     }
     QSqlQuery query;
     query.exec("create table if not exists Datos"
-                       "(id integer primary key autoincrement, "
-                       "host varchar(100), "
-                       "timestamp long, "
-                       "ruta varchar(200))");
-
-    //Comprobación de que ha sido creada la tabla
-    QStringList  listaTablas = db_.tables();
-    qDebug() << "Número de tablas creadas: " << listaTablas.size();
-    for (int i = 0; i < listaTablas.size(); i++){
-        qDebug() << "Tabla[" << i << "] => "<< listaTablas[i];
-    }
+               "(id integer primary key autoincrement, "
+               "host varchar(100), "
+               "timestamp long, "
+               "ruta varchar(200))");
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -84,12 +77,15 @@ void ViewerWindow::on_actionAbrirImagen_triggered()
     //del tipo QFileDialog
     QString fileName=QFileDialog::getOpenFileName(this,"abrir archivo de imagen", QString());
 
-    if(!fileName.isEmpty()) {
+    if(!fileName.isEmpty())
+    {
         QFile file(fileName);
-        if(!file.open(QIODevice::ReadOnly)) {
+        if(!file.open(QIODevice::ReadOnly))
+        {
             QMessageBox::information(this,"Abrir archivo","El archivo no puedo ser abierto.");
         }
-        else {
+        else
+        {
             QPixmap pixmap(fileName);
             ui->label->setPixmap(pixmap);
         }
@@ -114,12 +110,14 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     QString fileName=QFileDialog::getOpenFileName(this,"abrir archivo de video",QString(),"video(*.mjpeg)");
     movie_->setFileName(fileName);
 
-    if (!movie_->isValid()) {
+    if (!movie_->isValid())
+    {
         QMessageBox::critical(this, tr("Error"),tr("No se pudo abrir el archivo o el formato"
                                                    " es inválido"));
         return;
     }
-    else {
+    else
+    {
         if(ui->checkBox->checkState()==2) movie_->start();
 
         //coneccionóde señales
@@ -221,9 +219,11 @@ void ViewerWindow::capture_s()
 
     QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
-    for (int i = 0; i < ipAddressesList.size(); ++i) {
+    for (int i = 0; i < ipAddressesList.size(); ++i)
+    {
         if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
-                ipAddressesList.at(i).toIPv4Address()) {
+                ipAddressesList.at(i).toIPv4Address())
+        {
             ipAddress = ipAddressesList.at(i).toString();
             break;
         }
@@ -233,7 +233,8 @@ void ViewerWindow::capture_s()
         ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
     //Escucha peticiones
 
-    if (!sslServer_->listen(QHostAddress::Any, puerto)) {
+    if (!sslServer_->listen(QHostAddress::Any, puerto))
+    {
         QMessageBox::critical(this, tr("Servidor"),
                               tr("Imposible iniciars conexión: %1.")
                               .arg(sslServer_->errorString()));
@@ -244,10 +245,7 @@ void ViewerWindow::capture_s()
                           "Envia imágenes ahora.").arg(ipAddress).arg(puerto));
 
 }
-
-
-
-
+//Muestra el guión de las consultas a la base de datos
 void ViewerWindow::on_actionBase_de_datos_triggered()
 {
     bddialog_ = new BDDialog();

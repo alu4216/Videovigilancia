@@ -8,7 +8,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     ui(new Ui::ViewerWindow)
 {
     ui->setupUi(this);
-
     //variables de configuración del programa
     QSettings settings;
     indice_ = settings.value("indice").toInt();
@@ -26,7 +25,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     estado_=false;
     devices_ = QCamera::availableDevices();
     settings.setValue("HOSTNAME", QHostInfo::localHostName());
-
     movie_=new QMovie();
 
     // Registra QVector<QRect> como tipo en qt para reconocerlo al hacer connect
@@ -34,15 +32,11 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
 
     // Pasar la petición de procesar el frame
     connect(this, SIGNAL(Procesar_Imagen(const QImage &)),&imageProcesor_,SLOT(Procesador_imagen(const QImage &)));
-
     // Ser notificado cuando el frame ha sido procesado
     connect(&imageProcesor_, SIGNAL(Mandar_imagen(const QImage &,const QVector<QRect> &)),this,SLOT(image_s(const QImage&,const QVector<QRect> &)));
 
     imageProcesor_.moveToThread(&hilo_);// Migrar la instancia de imageProcesor al hilo de trabajo
-
     hilo_.start();// Iniciar el hilo de trabajo
-
-    qDebug()<<"hilo";
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -84,12 +78,15 @@ void ViewerWindow::on_actionAbrirImagen_triggered()
     }
     QString fileName=QFileDialog::getOpenFileName(this,"abrir archivo de imagen", QString());
 
-    if(!fileName.isEmpty()) {
+    if(!fileName.isEmpty())
+    {
         QFile file(fileName);
-        if(!file.open(QIODevice::ReadOnly)) {
+        if(!file.open(QIODevice::ReadOnly))
+        {
             QMessageBox::information(this,"Abrir archivo","El archivo no puedo ser abierto.");
         }
-        else {
+        else
+        {
             QPixmap pixmap(fileName);
             ui->label->setPixmap(pixmap);
         }
@@ -114,18 +111,19 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     QString fileName=QFileDialog::getOpenFileName(this,"abrir archivo de video",QString(),"video(*.mjpeg)");
     movie_->setFileName(fileName);
 
-    if (!movie_->isValid()) {
+    if (!movie_->isValid())
+    {
         QMessageBox::critical(this, tr("Error"),tr("No se pudo abrir el archivo o el formato"
                                                    " es inválido"));
         return;
     }
-    else {
+    else
+    {
         if(ui->checkBox->checkState()==2) movie_->start();
 
         //coneccionóde señales
         connect(movie_, SIGNAL(updated(const QRect&)),this, SLOT(movie_frame(const QRect&)));
-        //señal para deteccion                             //&
-
+        //señal para deteccion
         connect(ui->push_Start, SIGNAL(clicked()), movie_, SLOT(start()));
         connect(ui->push_Stop, SIGNAL(clicked()), movie_, SLOT(stop()));
         connect(ui->Push_Pausa,SIGNAL(clicked()),this,SLOT(on_Push_Pausa_clicked()));
@@ -176,13 +174,10 @@ void ViewerWindow::on_actionCapturar_triggered()
         camera_->start();
     }
     //Conectar señales
-
     connect(captureBuffer_,SIGNAL(s_image(const QImage&)),&imageProcesor_,SLOT(Procesador_imagen(const QImage &)));
-    //connect(captureBuffer_,SIGNAL(s_image(QImage)),this,SLOT(image_s(QImage)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
     connect(ui->push_Stop,SIGNAL(clicked()),camera_,SLOT(stop()));
 }
-
 
 //Procesar los frame recibidos por la cam para mostrarlos y modificarlo(pintar sobre ellos)
 void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
@@ -199,7 +194,8 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignLeft,name,0);
     int i=0;
-    while(rectangulo.size() >= i){//recorro vector del rectangulo
+    while(rectangulo.size() >= i)
+    {
         QRect rect=rectangulo.value(i);
         paint.drawRect(rect);
         i++;
@@ -226,7 +222,6 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
         imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
         QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
 
-
         QSettings settings;
         //Struct de información total a enviar
         Package package;
@@ -243,7 +238,6 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
 
         //Reconversión de la cadena para enviar como ByteArray
         QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
-
 
         qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
                   " "<<package.size_string<< " "<<array.size()<<" " <<package.image;

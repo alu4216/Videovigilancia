@@ -28,9 +28,9 @@ class Deteccion : public QObject
         void cierre(const bool &x);
 
     private:
-        cv::BackgroundSubtractorMOG2 *backgroundSubtractor;
-        cv::Mat foregroundMask;
-        QVector<QRect> VRect;
+        cv::BackgroundSubtractorMOG2 *backgroundSubtractor_;
+        cv::Mat foregroundMask_;
+        QVector<QRect> VRect_;
         bool cierre_;
 };
 #endif
