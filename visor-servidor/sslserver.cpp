@@ -63,7 +63,7 @@ void SslServer::incomingConnection(qintptr socketDescriptor)
         errors.append(QSslError::CertificateUntrusted);
         sslSocket->ignoreSslErrors(errors);
 
-        //Create new client with the established connection
+        //Crea un nuevo cliente para la conexión entrante
         ClientSocket *client=new ClientSocket(sslSocket,this);
         clients_.append(client);
     }

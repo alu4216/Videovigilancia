@@ -60,15 +60,12 @@ private slots:
     void on_Push_Pausa_clicked();
     void on_actionCapturar_triggered();
     void on_actionPreferencias_triggered();
+    void on_actionBase_de_datos_triggered();
 
     void actualizar_s(int);
     void capture_s();
-
     void movie_frame(const QRect& rect);
-    void image_s(const QImage&);
-
-
-    void on_actionBase_de_datos_triggered();
+    void image_s(const QImage&);  
 
 private:
 

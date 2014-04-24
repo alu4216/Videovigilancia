@@ -16,10 +16,6 @@ public:
     ~SslServer();
     void incomingConnection(qintptr);
 
-signals:
-
-public slots:
-
 private:
 
     QByteArray key_;

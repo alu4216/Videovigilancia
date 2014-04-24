@@ -160,16 +160,14 @@ void ViewerWindow::on_actionCapturar_triggered()
         delete movie_;
         movie_= NULL;
     }
-
     camera_ = new QCamera(devices_[indice_]);
     captureBuffer_ = new CaptureBuffer();
     camera_->setViewfinder(captureBuffer_);
-
     camera_->start();
+
     connect(captureBuffer_,SIGNAL(s_image(QImage)),this,SLOT(image_s(QImage)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
     connect(ui->push_Stop,SIGNAL(clicked()),camera_,SLOT(stop()));
-
 }
 //Procesar los frame recibidos por la cam para mostrarlos y modificarlo(pintar sobre ellos)
 void ViewerWindow::image_s(const QImage &image)
@@ -183,7 +181,6 @@ void ViewerWindow::image_s(const QImage &image)
     paint.setPen(Qt::green);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     ui->label->setPixmap(pixmap);
-
 }
 //Ventana de preferencias de cámara.Seleccionar la cámara a utilizar
 void ViewerWindow::on_actionPreferencias_triggered()
@@ -216,7 +213,6 @@ void ViewerWindow::capture_s()
     QSettings settings;
     int puerto=settings.value("Puertos/puerto",15000).toInt();
     sslServer_= new SslServer();
-
     QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
     for (int i = 0; i < ipAddressesList.size(); ++i)
@@ -232,7 +228,6 @@ void ViewerWindow::capture_s()
     if (ipAddress.isEmpty())
         ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
     //Escucha peticiones
-
     if (!sslServer_->listen(QHostAddress::Any, puerto))
     {
         QMessageBox::critical(this, tr("Servidor"),
@@ -243,7 +238,6 @@ void ViewerWindow::capture_s()
     }
     ui->label->setText(tr("El servidor está corriendo en la: \n\nIP: %1\nPuerto: %2\n\n"
                           "Envia imágenes ahora.").arg(ipAddress).arg(puerto));
-
 }
 //Muestra el guión de las consultas a la base de datos
 void ViewerWindow::on_actionBase_de_datos_triggered()

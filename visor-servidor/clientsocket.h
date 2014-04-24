@@ -37,7 +37,6 @@ private:
     int imagen_size_;
     int string_size_;
     long idDb_;
-
     QLabel label_;
     QWidget * widget_;
     QGridLayout * layout_;

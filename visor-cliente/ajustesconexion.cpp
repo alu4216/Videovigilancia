@@ -10,13 +10,11 @@ AjustesConexion::AjustesConexion(QWidget *parent) :
     connect(ui->pushGuardar,SIGNAL(clicked()),this,SLOT(ajustes_s()));
     connect(ui->pushPorDefecto,SIGNAL(clicked()),this,SLOT(porDefecto_s()));
 }
-
 //Destructor
 AjustesConexion::~AjustesConexion()
 {
     delete ui;
 }
-
 //Ajustes de de conexión. Elección de puerto e ip a enviar
 void AjustesConexion::ajustes_s()
 {
@@ -27,7 +25,6 @@ void AjustesConexion::ajustes_s()
     settings.setValue("Network/ip",ip);
     close();
 }
-
 //Ajustes de conexión por defecto. Valores por defecto
 void AjustesConexion::porDefecto_s()
 {

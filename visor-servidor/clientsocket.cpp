@@ -25,7 +25,6 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     layout_->addWidget(&label_);
     label_.setScaledContents(true);
     mostrarImagen_=true;
-
 }
 //Destructor
 ClientSocket::~ClientSocket()
@@ -39,7 +38,9 @@ void ClientSocket::readData()
 {
     int *size;
     qint64 *tam;
-    if(leer_timestamp_==true)//Leer tiempo
+
+    //Leer tiempo
+    if(leer_timestamp_==true)
     {
         if(sslSocket_->bytesAvailable()>=8)
         {
@@ -56,7 +57,6 @@ void ClientSocket::readData()
             leer_size_string_=false;
         }
     }
-
     //Estado leer cabecera(tamaño imagen)
     if(leer_cabecera_==true)
     {
@@ -74,7 +74,6 @@ void ClientSocket::readData()
             leer_imagen_=true;
             leer_timestamp_=false;
             leer_size_string_=false;
-
         }
     }
     //Estado leer imagen
@@ -104,8 +103,8 @@ void ClientSocket::readData()
             guardarImagen(timestamp_, image);
         }
     }
-
-    if(leer_size_string_==true)//Leer tamaño cadena
+    //Leer tamaño cadena
+    if(leer_size_string_==true)
     {
         if(sslSocket_->bytesAvailable()>=4)
         {
@@ -123,9 +122,9 @@ void ClientSocket::readData()
             leer_size_string_=false;
             leer_string_=true;
         }
-
     }
-    if(leer_string_==true)//Leer cadena
+    //Leer cadena
+    if(leer_string_==true)
     {
         if(sslSocket_->bytesAvailable()>=string_size_)
         {

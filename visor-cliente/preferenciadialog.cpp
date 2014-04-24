@@ -19,9 +19,8 @@ PreferenciaDialog::PreferenciaDialog(const QList<QByteArray> &devices,QWidget * 
     }while(i<devices.size());
 
     ui->comboBox->setCurrentIndex(settings.value("indice").toInt());
-
 }
-
+//Destructor
 PreferenciaDialog::~PreferenciaDialog()
 {
     delete ui;

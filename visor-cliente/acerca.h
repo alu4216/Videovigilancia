@@ -18,7 +18,6 @@ public:
 
 private:
     Ui::Acerca *ui;
-
 };
 
 #endif // ACERCA_H

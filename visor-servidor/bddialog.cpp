@@ -1,6 +1,7 @@
 #include "bddialog.h"
 #include "ui_bddialog.h"
 
+//Constructor
 BDDialog::BDDialog(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BDDialog)
@@ -21,12 +22,12 @@ BDDialog::BDDialog(QWidget *parent) :
     }
 
 }
-
+//Destructor
 BDDialog::~BDDialog()
 {
     delete ui;
 }
-
+//Listar
 void BDDialog::on_listWidget_itemClicked(QListWidgetItem *item)
 {
     QString text = item->text();
