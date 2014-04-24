@@ -10,6 +10,7 @@ bool CaptureBuffer:: present(const QVideoFrame &frame)
                                  QVideoFrame::imageFormatFromPixelFormat(frame2.pixelFormat()));
 
     frameAsImage.copy();
+    frameAsImage=frameAsImage.convertToFormat(QImage::Format_RGB32,Qt::ColorOnly);
     emit s_image(frameAsImage);
     frame2.unmap();
     return true;

@@ -23,14 +23,21 @@
 #include <QImageWriter>
 #include <QDateTime>
 #include <QtEndian>
+<<<<<<< HEAD
 #include <QHostInfo>
+=======
+#include <QSslSocket>
+#include <QImage>
+>>>>>>> c1082d9ae60597ba00255296ba27846b2dacdb96
 
-
+#include <QThread>
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
 #include "ajustesconexion.h"
+#include "deteccion.h"
 
+#include "cvmatandqimage.h"
 
 
 namespace Ui {
@@ -47,6 +54,10 @@ public:
 
 private:
     void reconectar();
+    void send_data(const QPixmap &pixmap);
+
+signals:
+    void Procesar_Imagen(const QImage &image);
 
 private slots:
     void on_Salir_clicked();
@@ -63,7 +74,10 @@ private slots:
 
     void movie_frame(const QRect& rect);
     void actualizar_s(int);
-    void image_s(const QImage&);
+    void image_s(const QImage&, const QVector<QRect> &rectangulo);
+
+    //void vectorImage(const QImage img, const QVector<QRect> &rectangulo);
+
 
 private:
     Ui::ViewerWindow * ui;
@@ -72,7 +86,7 @@ private:
     PreferenciaDialog * preferencias_;
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;
-    QTcpSocket * tcpsocket_;
+    QSslSocket * sslSocket_;
     AjustesConexion * conexion_;
     QList<QByteArray> devices_;
     int check_;
@@ -88,6 +102,8 @@ private:
         qint32 size_string;
         QByteArray image;
     };
+    Deteccion imageProcesor_;
+    QThread hilo_;
 
     //QList <Package>lista;
 };

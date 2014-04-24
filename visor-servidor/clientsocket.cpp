@@ -1,8 +1,8 @@
 #include "clientsocket.h"
 
 //Constructor
-ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
-    QObject(parent),tcpSocket_(tcpSocket)
+ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
+    QObject(parent),sslSocket_(sslSocket_)
 {
     db_.setDatabaseName("data.sqlite");
     if (!db_.open()) {
@@ -19,17 +19,25 @@ ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     leer_imagen_=false;
     leer_timestamp_=true;
     leer_size_string_=false;
-    connect(tcpSocket_,SIGNAL(readyRead()),this,SLOT(readData()));
-    connect(tcpSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
-    connect(tcpSocket_,SIGNAL(error(QAbstractSocket::SocketError)),this,
-                              SLOT(mostrarErrores(QAbstractSocket::SocketError)));
 
+    connect(sslSocket_,SIGNAL(readyRead()),this,SLOT(readData()));
+    connect(sslSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
+    connect(sslSocket_,SIGNAL(error(QAbstractSocket::SocketError)),this,
+            SLOT(mostrarErrores(QAbstractSocket::SocketError)));
+
+    widget_=new QWidget();
+    layout_= new QGridLayout(widget_);
+    layout_->addWidget(&label_);
+    label_.setScaledContents(true);
+    mostrarImagen_=true;
 
 }
 //Destructor
 ClientSocket::~ClientSocket()
 {
-    delete tcpSocket_;
+    delete sslSocket_;
+    //delete layout_;
+    //delete widget_;
 }
 //Leer datos del socket
 void ClientSocket::readData()
@@ -39,9 +47,9 @@ void ClientSocket::readData()
     qint64 *tam;
     if(leer_timestamp_==true)//Leer tiempo
     {
-        if(tcpSocket_->bytesAvailable()>=8)
+        if(sslSocket_->bytesAvailable()>=8)
         {
-            data_=tcpSocket_->read(8);
+            data_=sslSocket_->read(8);
             tam=reinterpret_cast<qint64*>(data_.data());
             timestamp_=*tam;
             data_.clear();
@@ -58,9 +66,9 @@ void ClientSocket::readData()
     //Estado leer cabecera(tamaño imagen)
     if(leer_cabecera_==true)
     {
-        if((tcpSocket_->bytesAvailable())>=4)//Si existe los suficientes datos
+        if((sslSocket_->bytesAvailable())>=4)//Si existe los suficientes datos
         {
-            data_=tcpSocket_->read(4);
+            data_=sslSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             imagen_size_=*size;
             imagen_size_=qFromLittleEndian(imagen_size_);//Reconvierto bytes de LittleEndia al usado en el pc
@@ -77,13 +85,17 @@ void ClientSocket::readData()
     }//Estado leer imagen
     if(leer_imagen_ ==true)
     {
-        if((tcpSocket_->bytesAvailable())>=imagen_size_)
+        if((sslSocket_->bytesAvailable())>=imagen_size_)
         {
-            data_=tcpSocket_->read(imagen_size_);
+            data_=sslSocket_->read(imagen_size_);
             QImage image;
             image_.loadFromData(data_,"JPEG");
             qDebug()<<"IMAGEN "<<image_;
             data_.clear();
+
+            QPixmap pixmap;
+            pixmap=pixmap.fromImage(image);
+            label_.setPixmap(pixmap);
             //Estados de la lectura
             leer_cabecera_=false;
             leer_imagen_=false;
@@ -92,16 +104,25 @@ void ClientSocket::readData()
 
 
 
-
+            //----------------------------------------------------OJO
             emit s_mostrar_captura(image_);
+
+            if(mostrarImagen_==true)//para que se habra la ventana inicialmente solo si
+            {                       // hay imagenes que mostrar
+                mostrarImagen_=false;
+                widget_->show();
+            }
+            //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
+            guardarImagen(timestamp_, image);
+
         }
     }
 
     if(leer_size_string_==true)//Leer tamaño cadena
     {
-        if(tcpSocket_->bytesAvailable()>=4)
+        if(sslSocket_->bytesAvailable()>=4)
         {
-            data_=tcpSocket_->read(4);
+            data_=sslSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             string_size_=*size;
             string_size_=qFromLittleEndian(string_size_);//Reconvierto bytes de LittleEndia al usado en el pc
@@ -119,9 +140,9 @@ void ClientSocket::readData()
     }
     if(leer_string_==true)//Leer cadena
     {
-        if(tcpSocket_->bytesAvailable()>=string_size_)
+        if(sslSocket_->bytesAvailable()>=string_size_)
         {
-            data_=tcpSocket_->read(string_size_);
+            data_=sslSocket_->read(string_size_);
             string_=QString::fromLatin1(data_.data(),string_size_);
             qDebug()<<"CADENA: "<<string_;
             qDebug()<<"-------------------------------------------";
@@ -141,20 +162,21 @@ void ClientSocket::readData()
         }
     }
 }
-
+//Mostrar errores de conexión del socket
 void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
 {
-  QString string=tcpSocket_->errorString();
-  qDebug()<<"Entro a mostrar Errores\n";
-  qDebug()<<string;
-  QMessageBox ventana;
-  ventana.setWindowTitle("Mensaje de Error");
-  ventana.setText(string);
-  ventana.setStandardButtons(QMessageBox::Ok);
-  ventana.exec();
+    QString string=sslSocket_->errorString();
+    qDebug()<<"Entro a mostrar Errores\n";
+    qDebug()<<string;
+    QMessageBox ventana;
+    ventana.setWindowTitle("Mensaje de Error");
+    ventana.setText(string);
+    ventana.setStandardButtons(QMessageBox::Ok);
+    ventana.exec();
+    widget_->close();
 }
-
-bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
+//Guardar imagenes en directores segun el timestamp
+void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     qint32 szHx = 16;
     qint32 s1 = 4;
     qint32 s2 = 8;

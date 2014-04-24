@@ -26,13 +26,15 @@
 #include <QDataStream>
 #include <QSqlDatabase>
 #include <QSqlQuery>
-
+#include <QSslSocket>
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
 #include "capturared.h"
 #include "clientsocket.h"
 #include "bddialog.h"
+#include "sslserver.h"
+
 
 
 namespace Ui {
@@ -61,10 +63,10 @@ private slots:
 
     void actualizar_s(int);
     void capture_s();
-    void conexionSocket_s();
+
     void movie_frame(const QRect& rect);
     void image_s(const QImage&);
-    void mostrar_captura_s(const QImage&);
+
 
     void on_actionBase_de_datos_triggered();
 
@@ -77,11 +79,11 @@ private:
     PreferenciaDialog * preferencias_;
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;
-    QTcpServer * tcpServer_;
+    SslServer * sslServer_;
     CapturaRed * capturaRed_;
 
     QList<QByteArray> devices_;
-    QList<ClientSocket*> clients_;
+
     int check_;
     int indice_;
     int puerto_;

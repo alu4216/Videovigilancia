@@ -2,7 +2,7 @@
 #define CLIENTSOCKET_H
 
 #include <QObject>
-#include <QTcpSocket>
+#include <QSslSocket>
 #include <QBuffer>
 #include <QImage>
 #include <QMessageBox>
@@ -12,22 +12,25 @@
 #include <QSqlQuery>
 
 //#include "viewerwindow.h"
+#include <QWidget>
+#include <QLabel>
+#include <QGridLayout>
 
 class ClientSocket : public QObject
 {
     Q_OBJECT
 public:
-    explicit ClientSocket(QTcpSocket * tcpSocket,QObject *parent = 0);
-     bool guardarImagen(qint64, QImage);
+    explicit ClientSocket(QSslSocket * sslSocket_,QObject *parent = 0);
+    void guardarImagen(qint64, QImage);
     ~ClientSocket();
 
-signals:
-    void s_mostrar_captura(const QImage&);
+
 public slots:
     void readData();
     void mostrarErrores(QAbstractSocket::SocketError);
+
 private:
-    QTcpSocket *tcpSocket_;
+    QSslSocket *sslSocket_;
     QByteArray data_;
     qint64 timestamp_;
     QString string_;
@@ -36,6 +39,9 @@ private:
     long idDb_;
     QImage image_;
 
+    QLabel label_;
+    QWidget * widget_;
+    QGridLayout * layout_;
     bool leer_cabecera_;
     bool leer_imagen_;
     bool leer_timestamp_;
@@ -44,7 +50,7 @@ private:
 
     QWidget * widget_;
     QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
-
+    bool mostrarImagen_;
 };
 
 #endif // CLIENTSOCKET_H

@@ -3,8 +3,11 @@
 # Archivos de backup
 *~
 #Carpetas con los ejecutables
+build-visorCliente-Desktop_Qt_5_2_1_GCC_64bit-Debug/**/*
+build-visorServidor-Desktop_Qt_5_2_1_GCC_64bit-Debug/**/*
 build-visorServidor-Desktop_Qt_5_2_0_clang_64bit-Debug/**/*
 build-visorCliente-Desktop_Qt_5_2_0_clang_64bit-Debug/**/*
+build-visorCliente-Desktop_Qt_5_2_1_GCC_64bit-Debug
 build_visorCliente/**/*
 build_visorServidor/**/*
 #Archivos .DS_Store de OS X

@@ -7,6 +7,8 @@
 QT       += core gui
 QT       += multimedia multimediawidgets
 
+CONFIG +=qt
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = visor
@@ -18,15 +20,24 @@ SOURCES += main.cpp\
     acerca.cpp \
     preferenciadialog.cpp \
     capturebuffer.cpp \
-    ajustesconexion.cpp
+    ajustesconexion.cpp \
+    deteccion.cpp
+
 
 HEADERS  += viewerwindow.h \
     preferenciadialog.h \
     acerca.h \
     capturebuffer.h \
-    ajustesconexion.h
+    ajustesconexion.h \
+    deteccion.h
+
 
 FORMS    += viewerwindow.ui \
     acerca.ui \
     preferenciadialog.ui \
     ajustesconexion.ui
+
+include(QtOpenCV.pri)
+
+add_opencv_modules(core video imgproc)
+
