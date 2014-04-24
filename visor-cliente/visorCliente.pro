@@ -41,3 +41,17 @@ include(QtOpenCV.pri)
 
 add_opencv_modules(core video imgproc)
 
+
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib \
+    -lopencv_core \
+    -lopencv_imgproc \
+    -lopencv_video
+
+OTHER_FILES += \
+    opencv.pri
+    QtOpenCV.pri
+
+
+#unix: CONFIG += link_pkgconfig
+#unix: PKGCONFIG += libopencv

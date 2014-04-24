@@ -89,10 +89,8 @@ void ClientSocket::readData()
         {
             data_=sslSocket_->read(imagen_size_);
             QImage image;
-            image_.loadFromData(data_,"JPEG");
-            qDebug()<<"IMAGEN "<<image_;
+            image.loadFromData(data_,"JPEG");
             data_.clear();
-
             QPixmap pixmap;
             pixmap=pixmap.fromImage(image);
             label_.setPixmap(pixmap);
@@ -103,13 +101,10 @@ void ClientSocket::readData()
             leer_size_string_=true;
 
 
-
-            //----------------------------------------------------OJO
-            emit s_mostrar_captura(image_);
-
             if(mostrarImagen_==true)//para que se habra la ventana inicialmente solo si
             {                       // hay imagenes que mostrar
                 mostrarImagen_=false;
+                //Abrir ventana para mostrar imagen
                 widget_->show();
             }
             //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
@@ -147,11 +142,6 @@ void ClientSocket::readData()
             qDebug()<<"CADENA: "<<string_;
             qDebug()<<"-------------------------------------------";
             data_.clear();
-
-
-
-            //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
-            guardarImagen(timestamp_, image_);
 
             //Estados de la lectura
             leer_cabecera_=false;

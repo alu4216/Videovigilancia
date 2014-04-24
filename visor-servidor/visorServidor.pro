@@ -6,10 +6,7 @@
 
 QT       += core gui
 QT       += multimedia multimediawidgets
-<<<<<<< HEAD
 QT       += sql
-=======
->>>>>>> c1082d9ae60597ba00255296ba27846b2dacdb96
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -43,4 +40,3 @@ FORMS    += viewerwindow.ui \
     capturared.ui \
     bddialog.ui \
     capturared.ui
->>>>>>> c1082d9ae60597ba00255296ba27846b2dacdb96

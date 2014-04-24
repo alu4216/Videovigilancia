@@ -249,7 +249,7 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
                   " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
         qDebug()<<"\n----------------------------------------------------------------";
 
-        if(tcpsocket_->state()!=3) //reconectar camara al servidor
+        if(sslSocket_->state()!=3) //reconectar camara al servidor
             reconectar();
         else
         ui->label->setPixmap(pixmap);
@@ -355,5 +355,5 @@ void ViewerWindow::reconectar()
     sslSocket_->setProtocol(QSsl::SslV3);
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
-    connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+    connect(sslSocket_,SIGNAL(encrypted()),this,SLOT(on_actionCapturar_triggered()));
 }

@@ -37,7 +37,6 @@ private:
     int imagen_size_;
     int string_size_;
     long idDb_;
-    QImage image_;
 
     QLabel label_;
     QWidget * widget_;
@@ -48,7 +47,6 @@ private:
     bool leer_size_string_;
     bool leer_string_;
 
-    QWidget * widget_;
     QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
     bool mostrarImagen_;
 };

@@ -23,12 +23,9 @@
 #include <QImageWriter>
 #include <QDateTime>
 #include <QtEndian>
-<<<<<<< HEAD
 #include <QHostInfo>
-=======
 #include <QSslSocket>
 #include <QImage>
->>>>>>> c1082d9ae60597ba00255296ba27846b2dacdb96
 
 #include <QThread>
 #include "acerca.h"
