@@ -25,6 +25,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     tcpsocket_ = NULL;
     estado_=false;
     devices_ = QCamera::availableDevices();
+    settings.setValue("HOSTNAME", QHostInfo::localHostName());
+
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -186,7 +188,7 @@ void ViewerWindow::image_s(const QImage &image)
         package.size=bytes.size();//Tamaño de la imagen en bytes
         package.image=bytes;//Imagen
         package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
-        package.name=settings.value("Network/Camara","INFO").toString();//Cadena a enviar
+        package.name=settings.value("HOSTNAME").toString();
         package.size_string=package.name.size();//Tamaño de la cadena
 
         //Fuerzo los bytes de los enteros a enviar a LittleEndian

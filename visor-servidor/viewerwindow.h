@@ -32,6 +32,7 @@
 #include "capturebuffer.h"
 #include "capturared.h"
 #include "clientsocket.h"
+#include "bddialog.h"
 
 
 namespace Ui {
@@ -65,11 +66,14 @@ private slots:
     void image_s(const QImage&);
     void mostrar_captura_s(const QImage&);
 
+    void on_actionBase_de_datos_triggered();
+
 private:
 
     Ui::ViewerWindow * ui;
     QMovie * movie_;
     Acerca * dialog_;
+    BDDialog * bddialog_;
     PreferenciaDialog * preferencias_;
     QCamera * camera_;
     CaptureBuffer * captureBuffer_;

@@ -4,6 +4,17 @@
 ClientSocket::ClientSocket(QTcpSocket * tcpSocket,QObject *parent) :
     QObject(parent),tcpSocket_(tcpSocket)
 {
+    db_.setDatabaseName("data.sqlite");
+    if (!db_.open()) {
+        QMessageBox::critical(NULL, tr("Error"),
+            tr("No se pudo acceder a los datos."));
+    }
+    QStringList  listaTablas = db_.tables();
+    qDebug() << "Número de tablas creadas: " << listaTablas.size();
+    for (int i = 0; i < listaTablas.size(); i++){
+        qDebug() << "Tabla[" << i << "] => "<< listaTablas[i];
+    }
+
     leer_cabecera_=false;
     leer_imagen_=false;
     leer_timestamp_=true;
@@ -70,8 +81,8 @@ void ClientSocket::readData()
         {
             data_=tcpSocket_->read(imagen_size_);
             QImage image;
-            image.loadFromData(data_,"JPEG");
-            qDebug()<<"IMAGEN "<<image;
+            image_.loadFromData(data_,"JPEG");
+            qDebug()<<"IMAGEN "<<image_;
             data_.clear();
             //Estados de la lectura
             leer_cabecera_=false;
@@ -79,11 +90,10 @@ void ClientSocket::readData()
             leer_timestamp_=false;
             leer_size_string_=true;
 
-            //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
-            guardarImagen(timestamp_, image);
 
 
-            emit s_mostrar_captura(image);
+
+            emit s_mostrar_captura(image_);
         }
     }
 
@@ -117,6 +127,11 @@ void ClientSocket::readData()
             qDebug()<<"-------------------------------------------";
             data_.clear();
 
+
+
+            //Aquí se debería crear un hilo nuevo para guardar la imagen??? Cuando se envíen sólo las imágenes que han cambiado no hará falta
+            guardarImagen(timestamp_, image_);
+
             //Estados de la lectura
             leer_cabecera_=false;
             leer_imagen_=false;
@@ -147,6 +162,7 @@ bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QString tt=QString::number(timestamp,szHx);
     tt.insert(s1, QString("/"));
     tt.insert(s2, QString("/"));
+    QString ttImage2 = tt;
     tt.push_front("./");
     QString ttImage = tt;
     ttImage.push_back(".JPEG");
@@ -156,5 +172,35 @@ bool ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
+
+    ttImage2.push_front("/");
+    ttImage2.push_front(QDir::currentPath());
+
+    //Almacenar en la base de datos.
+    QSqlQuery query;
+    query.prepare("INSERT INTO Datos (id, host, timestamp, ruta) "
+                  "VALUES (:id, :host, :timestamp, :ruta)");
+    query.bindValue(":id", timestamp);
+    query.bindValue(":host", string_);
+    query.bindValue(":timestamp", timestamp);
+    query.bindValue(":ruta", ttImage2);
+    query.exec();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

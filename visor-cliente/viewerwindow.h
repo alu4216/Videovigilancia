@@ -23,6 +23,7 @@
 #include <QImageWriter>
 #include <QDateTime>
 #include <QtEndian>
+#include <QHostInfo>
 
 
 #include "acerca.h"

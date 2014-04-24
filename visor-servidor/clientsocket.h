@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QtEndian>
 #include <QDir>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 //#include "viewerwindow.h"
 
@@ -31,6 +33,8 @@ private:
     QString string_;
     int imagen_size_;
     int string_size_;
+    long idDb_;
+    QImage image_;
 
     bool leer_cabecera_;
     bool leer_imagen_;
@@ -39,6 +43,7 @@ private:
     bool leer_string_;
 
     QWidget * widget_;
+    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
 
 };
 
