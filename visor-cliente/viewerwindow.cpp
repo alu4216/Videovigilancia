@@ -50,8 +50,8 @@ ViewerWindow::~ViewerWindow()
     delete sslSocket_;
     delete conexion_;
     imageProcesor_.cierre(true);
+    hilo_.exit();
     hilo_.wait();
-    hilo_.terminate();
 }
 //Cerrar el programa
 void ViewerWindow::on_Salir_clicked()
