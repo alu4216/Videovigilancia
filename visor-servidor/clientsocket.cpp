@@ -100,7 +100,7 @@ void ClientSocket::readData()
                 //Abrir ventana para mostrar imagen
                 widget_->show();
             }
-           // guardarImagen(timestamp_, image);
+            guardarImagen(timestamp_, image);
         }
     }
     //Leer tamaño cadena

@@ -39,8 +39,10 @@ void BDDialog::on_listWidget_itemClicked(QListWidgetItem *item)
         QString ruta = query.value(1).toString();
         QString id = query.value(0).toString();
         QString host = query.value(2).toString();
+        ruta=ruta +".JPEG";
         qDebug() << "ID: "<< id;
         qDebug() << ruta;
+
         QImage imagen = QImage(ruta);
         QPixmap pixmap;
         pixmap=pixmap.fromImage(imagen);
