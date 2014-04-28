@@ -67,6 +67,7 @@ private slots:
     void on_actionAjustes_Conexion_triggered();
     void on_actionComenzar_a_enviar_triggered();
 
+    void abrirVideo();
     void movie_frame(const QRect& rect);
     void actualizar_s(int);
     void image_s(const QImage&, const QVector<QRect> &rectangulo);

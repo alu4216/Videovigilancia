@@ -11,7 +11,7 @@ CONFIG +=qt
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = visor
+TARGET = visor_cliente
 TEMPLATE = app
 
 

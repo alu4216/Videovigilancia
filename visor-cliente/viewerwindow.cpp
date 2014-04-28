@@ -25,9 +25,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     estado_=false;
     devices_ = QCamera::availableDevices();
     settings.setValue("HOSTNAME", QHostInfo::localHostName());
-    movie_=new QMovie();
     qRegisterMetaType< QVector<QRect> >("QVector<QRect>");// Registra QVector<QRect> como tipo en qt
-                                                          // para reconocerlo al hacer connect
+    // para reconocerlo al hacer connect
 
     // Pasar la petición de procesar el frame
     connect(this, SIGNAL(Procesar_Imagen(const QImage &)),
@@ -96,6 +95,26 @@ void ViewerWindow::on_actionAbrirImagen_triggered()
 //Abrir vídeo
 void ViewerWindow::on_actionAbrirVideo_triggered()
 {
+    QSettings settings;
+    QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
+    int puerto = settings.value("Network/puerto",15000).toInt();
+
+    if(sslSocket_==NULL)
+        sslSocket_ = new QSslSocket(this);
+    else
+    {
+        sslSocket_->disconnect();
+        delete sslSocket_;
+        sslSocket_ = new QSslSocket(this);
+    }
+
+    sslSocket_->setProtocol(QSsl::SslV3);
+    sslSocket_->connectToHostEncrypted(ip,puerto);
+    sslSocket_->ignoreSslErrors();
+    connect(sslSocket_,SIGNAL(connected()),this,SLOT(abrirVideo()));
+}
+void ViewerWindow::abrirVideo()
+{
     if(movie_!=NULL)
     {
         delete movie_;
@@ -110,7 +129,6 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     movie_= new QMovie();
     QString fileName=QFileDialog::getOpenFileName(this,"abrir archivo de video",QString(),"video(*.mjpeg)");
     movie_->setFileName(fileName);
-
     if (!movie_->isValid())
     {
         QMessageBox::critical(this, tr("Error"),tr("No se pudo abrir el archivo o el formato"
@@ -124,7 +142,6 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
 
         //coneccionóde señales
         connect(movie_, SIGNAL(updated(const QRect&)),this, SLOT(movie_frame(const QRect&)));
-        //señal para deteccion
         connect(ui->push_Start, SIGNAL(clicked()), movie_, SLOT(start()));
         connect(ui->push_Stop, SIGNAL(clicked()), movie_, SLOT(stop()));
         connect(ui->Push_Pausa,SIGNAL(clicked()),this,SLOT(on_Push_Pausa_clicked()));
@@ -139,8 +156,6 @@ void ViewerWindow::on_Push_Pausa_clicked()
 //Mosrar frame a frame el vídeo
 void ViewerWindow::movie_frame(const QRect& )
 {
-    if(sslSocket_==NULL)
-         on_actionComenzar_a_enviar_triggered();
     //le manda al hilo la imagen para procesarla
     QImage img =movie_->currentImage();
     emit Procesar_Imagen(img);
@@ -166,7 +181,6 @@ void ViewerWindow::on_actionCapturar_triggered()
         delete movie_;
         movie_=NULL;
     }
-
     if(captureBuffer_==NULL) captureBuffer_ = new CaptureBuffer();
     if(camera_==NULL)
     {
@@ -276,8 +290,7 @@ void ViewerWindow::on_actionAjustes_Conexion_triggered()
     conexion_= new AjustesConexion();
     conexion_->show();
 }
-
-//Conectar con el servidor y activar el envío de datos
+//Conectar con el servidor y activar el envío de datos(camara)
 void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 {
     QSettings settings;
@@ -286,10 +299,16 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 
     if(sslSocket_==NULL)
         sslSocket_ = new QSslSocket(this);
-
+    else
+    {
+        sslSocket_->disconnect();
+        delete sslSocket_;
+        sslSocket_ = new QSslSocket(this);
+    }
     sslSocket_->setProtocol(QSsl::SslV3);
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
+
     connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
 }
 //Reconectar con el servidor automáticamente
