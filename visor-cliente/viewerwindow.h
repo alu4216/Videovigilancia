@@ -49,7 +49,7 @@ public:
 
 private:
     void reconectar();
-    void send_data(const QPixmap &pixmap);
+    void send_data(const QPixmap &pixmap, const QVector<QRect> &rectangulo);
 
 signals:
     void Procesar_Imagen(const QImage &image);
@@ -97,6 +97,7 @@ private:
         qint32 size;
         qint32 size_string;
         QByteArray image;
+        qint32 size_vector;
     };
     Deteccion imageProcesor_;
     QThread hilo_;

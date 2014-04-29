@@ -8,12 +8,16 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     if (!db_.open())
     {
         QMessageBox::critical(NULL, tr("Error"),
-            tr("No se pudo acceder a los datos."));
+                              tr("No se pudo acceder a los datos."));
     }
     leer_cabecera_=false;
     leer_imagen_=false;
     leer_timestamp_=true;
     leer_size_string_=false;
+    leer_string_=false;
+    leer_n_rectangulo_=false;
+    leer_rectangulos_=false;
+    contador_=0;
 
     connect(sslSocket_,SIGNAL(readyRead()),this,SLOT(readData()));
     connect(sslSocket_,SIGNAL(disconnected()),this,SLOT(deleteLater()));
@@ -24,6 +28,7 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     layout_= new QGridLayout(widget_);
     layout_->addWidget(&label_);
     label_.setScaledContents(true);
+    //Abrir ventana para mostrar imagen
     mostrarImagen_=true;
 }
 //Destructor
@@ -38,6 +43,7 @@ void ClientSocket::readData()
 {
     int *size;
     qint64 *tam;
+    QRect *aux;
 
     //Leer tiempo
     if(leer_timestamp_==true)
@@ -55,6 +61,9 @@ void ClientSocket::readData()
             leer_imagen_=false;
             leer_timestamp_=false;
             leer_size_string_=false;
+            leer_string_=false;
+            leer_n_rectangulo_=false;
+            leer_rectangulos_=false;
         }
     }
     //Estado leer cabecera(tamaño imagen)
@@ -74,6 +83,9 @@ void ClientSocket::readData()
             leer_imagen_=true;
             leer_timestamp_=false;
             leer_size_string_=false;
+            leer_string_=false;
+            leer_n_rectangulo_=false;
+            leer_rectangulos_=false;
         }
     }
     //Estado leer imagen
@@ -84,23 +96,18 @@ void ClientSocket::readData()
             data_=sslSocket_->read(imagen_size_);
             QImage image;
             image.loadFromData(data_,"JPEG");
+            image_=image;
             data_.clear();
-            QPixmap pixmap;
-            pixmap=pixmap.fromImage(image);
-            label_.setPixmap(pixmap);
             //Estados de la lectura
             leer_cabecera_=false;
             leer_imagen_=false;
             leer_timestamp_=false;
             leer_size_string_=true;
+            leer_string_=false;
+            leer_n_rectangulo_=false;
+            leer_rectangulos_=false;
 
-            if(mostrarImagen_==true)//para que se habra la ventana inicialmente solo si
-            {                       // hay imagenes que mostrar
-                mostrarImagen_=false;
-                //Abrir ventana para mostrar imagen
-                widget_->show();
-            }
-            guardarImagen(timestamp_, image);
+            //guardarImagen(timestamp_, image);
         }
     }
     //Leer tamaño cadena
@@ -121,6 +128,8 @@ void ClientSocket::readData()
             leer_timestamp_=false;
             leer_size_string_=false;
             leer_string_=true;
+            leer_n_rectangulo_=false;
+            leer_rectangulos_=false;
         }
     }
     //Leer cadena
@@ -137,11 +146,109 @@ void ClientSocket::readData()
             //Estados de la lectura
             leer_cabecera_=false;
             leer_imagen_=false;
-            leer_timestamp_=true;
+            leer_timestamp_=false;
             leer_size_string_=false;
             leer_string_=false;
+            leer_n_rectangulo_=true;
+            leer_rectangulos_=false;
+
         }
     }
+    //Leer número de rectangulos
+    if(leer_n_rectangulo_==true)
+    {
+        if(sslSocket_->bytesAvailable()>=4)
+        {
+            data_=sslSocket_->read(4);
+            size=reinterpret_cast<int*>(data_.data());
+            rectangulo_size_=*size;
+            rectangulo_size_= qFromLittleEndian(rectangulo_size_);
+            data_.clear();
+            //Estados de la lectura
+            leer_cabecera_=false;
+            leer_imagen_=false;
+            leer_timestamp_=false;
+            leer_size_string_=false;
+            leer_string_=false;
+            leer_n_rectangulo_=false;
+            leer_rectangulos_=true;
+            qDebug()<<"NUMERO DE RECTANGULOS"<<rectangulo_size_;
+        }
+    }
+    if(leer_rectangulos_==true)
+    {
+        if(sslSocket_->bytesAvailable()>=16)
+        {
+            if(rectangulo_size_>0)
+            {
+                data_=sslSocket_->read(4);
+                size=reinterpret_cast<int*>(data_.data());
+                x_=qFromLittleEndian(*size);
+                data_=sslSocket_->read(4);
+                size=reinterpret_cast<int*>(data_.data());
+                y_=qFromLittleEndian(*size);
+                data_=sslSocket_->read(4);
+                size=reinterpret_cast<int*>(data_.data());
+                ancho_=qFromLittleEndian(*size);
+                data_=sslSocket_->read(4);
+                size=reinterpret_cast<int*>(data_.data());
+                alto_=qFromLittleEndian(*size);
+                data_.clear();
+                qDebug()<<"CUADROS\n";
+                qDebug()<<"X "<<x_;
+                qDebug()<<"Y "<<y_;
+                qDebug()<<"ANCHO "<<ancho_;
+                qDebug()<<"ALTO "<<alto_;
+                QRect aux(x_,y_,ancho_,alto_);
+                rectangulo_.push_back(aux);
+            }
+            contador_++;
+
+            if(contador_<rectangulo_size_)
+            {
+                //Estados de la lectura
+                leer_cabecera_=false;
+                leer_imagen_=false;
+                leer_timestamp_=false;
+                leer_size_string_=false;
+                leer_string_=false;
+                leer_n_rectangulo_=false;
+                leer_rectangulos_=true;
+            }
+            else
+            {
+                //Estados de la lectura
+                leer_cabecera_=false;
+                leer_imagen_=false;
+                leer_timestamp_=true;
+                leer_size_string_=false;
+                leer_string_=false;
+                leer_n_rectangulo_=false;
+                leer_rectangulos_=false;
+                contador_=0;
+                QPixmap pixmap;
+                pixmap=pixmap.fromImage(image_);
+                QPainter paint(&pixmap);
+                paint.setPen(Qt::green);
+                int i=0;
+                while(rectangulo_.size()>i)
+                {
+                    QRect rect=rectangulo_.value(i);
+                    paint.drawRect(rect);
+                    i++;
+                }
+                rectangulo_.clear();
+                if(mostrarImagen_==true)
+                {
+                    mostrarImagen_=false;
+                    widget_->show();
+
+                }
+                label_.setPixmap(pixmap);
+            }
+        }
+    }
+
 }
 //Mostrar errores de conexión del socket
 void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )

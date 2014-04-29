@@ -92,7 +92,7 @@ void ViewerWindow::on_actionAbrirImagen_triggered()
         }
     }
 }
-//Abrir vídeo
+//Conectar al servidor
 void ViewerWindow::on_actionAbrirVideo_triggered()
 {
     QSettings settings;
@@ -113,6 +113,7 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     sslSocket_->ignoreSslErrors();
     connect(sslSocket_,SIGNAL(connected()),this,SLOT(abrirVideo()));
 }
+//Abrir vídeo
 void ViewerWindow::abrirVideo()
 {
     if(movie_!=NULL)
@@ -208,18 +209,18 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignLeft,name,0);
     int i=0;
-    while(rectangulo.size() >= i)//Pintar rectangulos
+   /* while(rectangulo.size() >= i)//Pintar rectangulos
     {
         QRect rect=rectangulo.value(i);
         paint.drawRect(rect);
         i++;
-    }
+    }*/
     ui->label->setPixmap(pixmap);//mostrar imagen en el servidor
     if(sslSocket_!=NULL)
-        send_data(pixmap);
+        send_data(pixmap,rectangulo);
 }
 //Enviar datos por el socket cifrado
-void ViewerWindow::send_data(const QPixmap &pixmap)
+void ViewerWindow::send_data(const QPixmap &pixmap,const QVector<QRect> &rectangulo)
 {
     qDebug()<<"ENTRO A DATOS CIFRADOS";
     if(sslSocket_->state()!=3) //reconectar camara al servidor
@@ -245,11 +246,13 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
         package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
         package.name=settings.value("Network/Camara","INFO").toString();
         package.size_string=package.name.size();//Tamaño de la cadena
+        package.size_vector=rectangulo.size();
 
         //Fuerzo los bytes de los enteros a enviar a LittleEndian
         package.size=qToLittleEndian(package.size);
         package.timestamp=qToLittleEndian(package.timestamp);
         package.size_string=qToLittleEndian(package.size_string);
+        package.size_vector=qToLittleEndian(package.size_vector);
 
         //Reconversión de la cadena para enviar como ByteArray
         QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
@@ -264,6 +267,29 @@ void ViewerWindow::send_data(const QPixmap &pixmap)
         sslSocket_->write(package.image,package.size);
         sslSocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
         sslSocket_->write(array,array.size());
+        sslSocket_->write(reinterpret_cast<char*>(&package.size_vector),sizeof(package.size_vector));
+        for(int i=0; i<package.size_vector;i++)
+        {
+            QRect aux=rectangulo[i];
+            qint32 x,y,ancho,alto;
+            x=aux.x();
+            y=aux.y();
+            ancho=aux.width();
+            alto=aux.height();
+            x=qToLittleEndian(x);
+            y=qToLittleEndian(y);
+            ancho=qToLittleEndian(ancho);
+            alto=qToLittleEndian(alto);
+            qDebug()<<"CUADRADOS\n";
+            qDebug()<<"X "<<x;
+            qDebug()<<"Y "<<y;
+            qDebug()<<"ANCHO "<<ancho;
+            qDebug()<<"ALTO "<<alto;
+            sslSocket_->write(reinterpret_cast<char*>(&x),sizeof(x));
+            sslSocket_->write(reinterpret_cast<char*>(&y),sizeof(y));
+            sslSocket_->write(reinterpret_cast<char*>(&ancho),sizeof(ancho));
+            sslSocket_->write(reinterpret_cast<char*>(&alto),sizeof(alto));
+        }
     }
 }
 //Ventana de preferencias de cámara.Seleccionar la cámara a utilizar

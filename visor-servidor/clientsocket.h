@@ -10,6 +10,9 @@
 #include <QDir>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QPainter>
+#include <QVector>
+#include <QRect>
 
 //#include "viewerwindow.h"
 #include <QWidget>
@@ -34,9 +37,16 @@ private:
     QByteArray data_;
     qint64 timestamp_;
     QString string_;
+    QImage image_;
     int imagen_size_;
     int string_size_;
+    int rectangulo_size_;
+    int ancho_;
+    int alto_;
+    int x_;
+    int y_;
     long idDb_;
+    int contador_;
     QLabel label_;
     QWidget * widget_;
     QGridLayout * layout_;
@@ -46,7 +56,10 @@ private:
     bool leer_size_string_;
     bool leer_string_;
     bool mostrarImagen_;
+    bool leer_n_rectangulo_;
+    bool leer_rectangulos_;
     QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
+    QVector<QRect> rectangulo_;
 
 };
 
