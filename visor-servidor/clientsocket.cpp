@@ -172,7 +172,6 @@ void ClientSocket::readData()
             leer_string_=false;
             leer_n_rectangulo_=false;
             leer_rectangulos_=true;
-            qDebug()<<"NUMERO DE RECTANGULOS"<<rectangulo_size_;
         }
     }
     if(leer_rectangulos_==true)
@@ -194,11 +193,6 @@ void ClientSocket::readData()
                 size=reinterpret_cast<int*>(data_.data());
                 alto_=qFromLittleEndian(*size);
                 data_.clear();
-                qDebug()<<"CUADROS\n";
-                qDebug()<<"X "<<x_;
-                qDebug()<<"Y "<<y_;
-                qDebug()<<"ANCHO "<<ancho_;
-                qDebug()<<"ALTO "<<alto_;
                 QRect aux(x_,y_,ancho_,alto_);
                 rectangulo_.push_back(aux);
             }
@@ -255,8 +249,6 @@ void ClientSocket::readData()
 void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
 {
     QString string=sslSocket_->errorString();
-    qDebug()<<"Entro a mostrar Errores\n";
-    qDebug()<<string;
     QMessageBox ventana;
     ventana.setWindowTitle("Mensaje de Error");
     ventana.setText(string);
@@ -278,15 +270,11 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QString ttImage = tt;
     ttImage.push_back(".JPEG");
     tt.truncate(sI);
-    qDebug() << tt;
-    qDebug() << QDir::currentPath();
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
     ttImage2.push_front("/");
     ttImage2.push_front(QDir::currentPath());
-
-    //Almacenar en la base de datos.
     QSqlQuery query;
     query.prepare("INSERT INTO Datos (host, timestamp, ruta) "
                   "VALUES (:host, :timestamp, :ruta)");
@@ -300,27 +288,16 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     int nameCol = rec.indexOf("id");
     q.last();
     QString ultimoId = q.value(nameCol).toString();
-
-
-    qDebug() << "||||||||||||||||||||||||||||||||||||||||";
-    qDebug() << "ULTIMO ID: " << ultimoId.toInt();
-    qDebug() << "||||||||||||||||||||||||||||||||||||||||";
-    qDebug() << rectangulo_.size();
     for (int i = 0; i < rectangulo_.size(); i++)
     {
         QSqlQuery query2;
-        query2.prepare("INSERT INTO Rect (id, x, y) "
-                       "VALUES (:id, :x, :y)");
+        query2.prepare("INSERT INTO Rect (id, x, y, alto, ancho) "
+                       "VALUES (:id, :x, :y, :alto, :ancho)");
         query2.bindValue(":id", ultimoId.toInt());
         query2.bindValue(":x", rectangulo_[i].x());
         query2.bindValue(":y", rectangulo_[i].y());
+        query2.bindValue(":alto", rectangulo_[i].height());
+        query2.bindValue(":ancho", rectangulo_[i].width());
         query2.exec();
-    }
-    QSqlQuery q2;
-    q2.prepare(QString("SELECT id, x, y FROM Rect WHERE id == %1").arg(ultimoId.toInt()));
-    q2.exec();
-    while (q2.next())
-    {
-        qDebug() << "ID: " << q2.value(0).toString() << " - X: " << q2.value(1).toString() << " - Y: " << q2.value(2).toString();
     }
 }

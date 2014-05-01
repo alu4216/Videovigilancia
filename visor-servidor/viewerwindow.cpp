@@ -41,6 +41,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
                "(id integer, "
                "x long, "
                "y long, "
+               "alto long, "
+               "ancho long, "
                "idioteque integer primary key)");
 }
 //Destructor

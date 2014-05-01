@@ -26,9 +26,12 @@ public:
 private slots:
     void on_listWidget_itemClicked(QListWidgetItem *item);
 
+    void on_lineEdit_textChanged(const QString &arg1);
+
 private:
     Ui::BDDialog *ui;
     QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
+    QList<QString> lista_;
 };
 
 #endif // BDDIALOG_H
