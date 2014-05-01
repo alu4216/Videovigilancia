@@ -13,6 +13,8 @@
 #include <QPainter>
 #include <QVector>
 #include <QRect>
+#include <QSqlRecord>
+#include <QDateTime>
 
 //#include "viewerwindow.h"
 #include <QWidget>

@@ -209,7 +209,7 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignLeft,name,0);
     int i=0;
-   /* while(rectangulo.size() >= i)//Pintar rectangulos
+    /* while(rectangulo.size() >= i)//Pintar rectangulos
     {
         QRect rect=rectangulo.value(i);
         paint.drawRect(rect);
@@ -222,73 +222,75 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
 //Enviar datos por el socket cifrado
 void ViewerWindow::send_data(const QPixmap &pixmap,const QVector<QRect> &rectangulo)
 {
-    qDebug()<<"ENTRO A DATOS CIFRADOS";
-    if(sslSocket_->state()!=3) //reconectar camara al servidor
-        reconectar();
-    else //Lienas de código para enviar frame y metadatos al servidor
-    {
-        //Procesar la imagen para enviarla por la red
-        QBuffer buffer;//crea un buffer interno de tipo byte array donde guardar los bytes de las imagenes
-        QImageWriter imageWriter(&buffer,"JPG"); // Nos permite utilizar una serie de manejadores
-        // Y escribira los datos sobre buffer
-        QImage imageSend; //creación de la imagen a enviar
-        imageSend=pixmap.toImage(); // converción del pixmap pintando a una Qimagen
-        imageWriter.setFormat("JPG"); // tipo de formato
-        imageWriter.setCompression(70); // compresión del la imagen
-        imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
-        QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
-        QSettings settings;
-
-        //Struct de información total a enviar
-        Package package;
-        package.size=bytes.size();//Tamaño de la imagen en bytes
-        package.image=bytes;//Imagen
-        package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
-        package.name=settings.value("Network/Camara","INFO").toString();
-        package.size_string=package.name.size();//Tamaño de la cadena
-        package.size_vector=rectangulo.size();
-
-        //Fuerzo los bytes de los enteros a enviar a LittleEndian
-        package.size=qToLittleEndian(package.size);
-        package.timestamp=qToLittleEndian(package.timestamp);
-        package.size_string=qToLittleEndian(package.size_string);
-        package.size_vector=qToLittleEndian(package.size_vector);
-
-        //Reconversión de la cadena para enviar como ByteArray
-        QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
-
-        qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
-                  " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
-        qDebug()<<"\n----------------------------------------------------------------";
-
-        //Lienas de código para enviar frame y metadatos al servidor
-        sslSocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
-        sslSocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
-        sslSocket_->write(package.image,package.size);
-        sslSocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
-        sslSocket_->write(array,array.size());
-        sslSocket_->write(reinterpret_cast<char*>(&package.size_vector),sizeof(package.size_vector));
-        for(int i=0; i<package.size_vector;i++)
+    if (rectangulo.size() != 0){
+        qDebug()<<"ENTRO A DATOS CIFRADOS";
+        if(sslSocket_->state()!=3) //reconectar camara al servidor
+            reconectar();
+        else //Lineas de código para enviar frame y metadatos al servidor
         {
-            QRect aux=rectangulo[i];
-            qint32 x,y,ancho,alto;
-            x=aux.x();
-            y=aux.y();
-            ancho=aux.width();
-            alto=aux.height();
-            x=qToLittleEndian(x);
-            y=qToLittleEndian(y);
-            ancho=qToLittleEndian(ancho);
-            alto=qToLittleEndian(alto);
-            qDebug()<<"CUADRADOS\n";
-            qDebug()<<"X "<<x;
-            qDebug()<<"Y "<<y;
-            qDebug()<<"ANCHO "<<ancho;
-            qDebug()<<"ALTO "<<alto;
-            sslSocket_->write(reinterpret_cast<char*>(&x),sizeof(x));
-            sslSocket_->write(reinterpret_cast<char*>(&y),sizeof(y));
-            sslSocket_->write(reinterpret_cast<char*>(&ancho),sizeof(ancho));
-            sslSocket_->write(reinterpret_cast<char*>(&alto),sizeof(alto));
+            //Procesar la imagen para enviarla por la red
+            QBuffer buffer;//crea un buffer interno de tipo byte array donde guardar los bytes de las imagenes
+            QImageWriter imageWriter(&buffer,"JPG"); // Nos permite utilizar una serie de manejadores
+            // Y escribira los datos sobre buffer
+            QImage imageSend; //creación de la imagen a enviar
+            imageSend=pixmap.toImage(); // converción del pixmap pintando a una Qimagen
+            imageWriter.setFormat("JPG"); // tipo de formato
+            imageWriter.setCompression(70); // compresión del la imagen
+            imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
+            QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
+            QSettings settings;
+
+            //Struct de información total a enviar
+            Package package;
+            package.size=bytes.size();//Tamaño de la imagen en bytes
+            package.image=bytes;//Imagen
+            package.timestamp=QDateTime::currentMSecsSinceEpoch();//Tiempo
+            package.name=QHostInfo::localHostName();
+            package.size_string=package.name.size();//Tamaño de la cadena
+            package.size_vector=rectangulo.size();
+
+            //Fuerzo los bytes de los enteros a enviar a LittleEndian
+            package.size=qToLittleEndian(package.size);
+            package.timestamp=qToLittleEndian(package.timestamp);
+            package.size_string=qToLittleEndian(package.size_string);
+            package.size_vector=qToLittleEndian(package.size_vector);
+
+            //Reconversión de la cadena para enviar como ByteArray
+            QByteArray array=package.name.toLatin1();//Conversión de la cadena para enviarla
+
+            qDebug()<<package.size<<" "<<package.timestamp<< " "<<package.name<<
+                      " "<<package.size_string<< " "<<array.size()<<" " <<package.image;
+            qDebug()<<"\n----------------------------------------------------------------";
+
+            //Lienas de código para enviar frame y metadatos al servidor
+            sslSocket_->write(reinterpret_cast<char*>(&package.timestamp),sizeof(package.timestamp));
+            sslSocket_->write(reinterpret_cast<char*>(&package.size),sizeof(package.size));
+            sslSocket_->write(package.image,package.size);
+            sslSocket_->write(reinterpret_cast<char*>(&package.size_string),sizeof(package.size_string));
+            sslSocket_->write(array,array.size());
+            sslSocket_->write(reinterpret_cast<char*>(&package.size_vector),sizeof(package.size_vector));
+            for(int i=0; i<package.size_vector;i++)
+            {
+                QRect aux=rectangulo[i];
+                qint32 x,y,ancho,alto;
+                x=aux.x();
+                y=aux.y();
+                ancho=aux.width();
+                alto=aux.height();
+                x=qToLittleEndian(x);
+                y=qToLittleEndian(y);
+                ancho=qToLittleEndian(ancho);
+                alto=qToLittleEndian(alto);
+                qDebug()<<"CUADRADOS\n";
+                qDebug()<<"X "<<x;
+                qDebug()<<"Y "<<y;
+                qDebug()<<"ANCHO "<<ancho;
+                qDebug()<<"ALTO "<<alto;
+                sslSocket_->write(reinterpret_cast<char*>(&x),sizeof(x));
+                sslSocket_->write(reinterpret_cast<char*>(&y),sizeof(y));
+                sslSocket_->write(reinterpret_cast<char*>(&ancho),sizeof(ancho));
+                sslSocket_->write(reinterpret_cast<char*>(&alto),sizeof(alto));
+            }
         }
     }
 }

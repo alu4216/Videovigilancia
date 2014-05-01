@@ -24,7 +24,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     sslServer_= NULL;
     capturaRed_= NULL;
     devices_ = QCamera::availableDevices();
-
     //Asignación del nombre de la base de datos y creación de la tabla
     db_.setDatabaseName("data.sqlite");
     if (!db_.open()) {
@@ -37,6 +36,12 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
                "host varchar(100), "
                "timestamp long, "
                "ruta varchar(200))");
+    QSqlQuery query2;
+    query2.exec("create table if not exists Rect"
+               "(id integer, "
+               "x long, "
+               "y long, "
+               "idioteque integer primary key)");
 }
 //Destructor
 ViewerWindow::~ViewerWindow()

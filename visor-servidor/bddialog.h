@@ -9,6 +9,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QListWidgetItem>
+#include <QDateTime>
 
 namespace Ui {
 class BDDialog;
