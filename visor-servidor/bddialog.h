@@ -30,7 +30,7 @@ private slots:
 
 private:
     Ui::BDDialog *ui;
-    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db_;
     QList<QString> lista_;
 };
 

@@ -3,11 +3,8 @@
 
 #include <QTcpServer>
 #include <QSettings>
-#include <QSslSocket>
-#include <QFile>
-#include <QSslCertificate>
-#include <QSslKey>
-#include "clientsocket.h"
+#include "thread.h"
+
 class SslServer : public QTcpServer
 {
     Q_OBJECT
@@ -17,10 +14,6 @@ public:
     void incomingConnection(qintptr);
 
 private:
-
-    QByteArray key_;
-    QByteArray certificate_;
-    QList<ClientSocket*> clients_;
 
 };
 

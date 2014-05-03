@@ -4,6 +4,7 @@
 ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     QObject(parent),sslSocket_(sslSocket_)
 {
+    db_ = QSqlDatabase::addDatabase("QSQLITE");
     db_.setDatabaseName("data.sqlite");
     if (!db_.open())
     {
@@ -43,7 +44,6 @@ void ClientSocket::readData()
 {
     int *size;
     qint64 *tam;
-    QRect *aux;
 
     //Leer tiempo
     if(leer_timestamp_==true)
@@ -174,6 +174,7 @@ void ClientSocket::readData()
             leer_rectangulos_=true;
         }
     }
+    //leer rectangulos
     if(leer_rectangulos_==true)
     {
         if(sslSocket_->bytesAvailable()>=16)
@@ -231,7 +232,7 @@ void ClientSocket::readData()
                     paint.drawRect(rect);
                     i++;
                 }
-                guardarImagen(timestamp_, image_);
+                //guardarImagen(timestamp_, image_);
                 rectangulo_.clear();
                 if(mostrarImagen_==true)
                 {

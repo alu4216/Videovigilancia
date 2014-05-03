@@ -6,6 +6,7 @@ BDDialog::BDDialog(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BDDialog)
 {
+    db_ = QSqlDatabase::addDatabase("QSQLITE");
     ui->setupUi(this);
     db_.setDatabaseName("data.sqlite");
     if (!db_.open())

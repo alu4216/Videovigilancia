@@ -8,7 +8,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     ui(new Ui::ViewerWindow)
 {
     ui->setupUi(this);
-
+    db_= QSqlDatabase::addDatabase("QSQLITE");
     //variables de configuración del programa
     QSettings settings;
     indice_ = settings.value("indice").toInt();
@@ -38,12 +38,12 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
                "ruta varchar(200))");
     QSqlQuery query2;
     query2.exec("create table if not exists Rect"
-               "(id integer, "
-               "x long, "
-               "y long, "
-               "alto long, "
-               "ancho long, "
-               "idioteque integer primary key)");
+                "(id integer, "
+                "x long, "
+                "y long, "
+                "alto long, "
+                "ancho long, "
+                "idioteque integer primary key)");
 }
 //Destructor
 ViewerWindow::~ViewerWindow()

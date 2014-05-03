@@ -27,6 +27,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSslSocket>
+#include <QThread>
 #include "acerca.h"
 #include "preferenciadialog.h"
 #include "capturebuffer.h"
@@ -83,7 +84,7 @@ private:
     int indice_;
     int puerto_;
     QString ip_;
-    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db_;
 };
 
 #endif // VIEWERWINDOW_H

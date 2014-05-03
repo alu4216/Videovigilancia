@@ -15,8 +15,6 @@
 #include <QRect>
 #include <QSqlRecord>
 #include <QDateTime>
-
-//#include "viewerwindow.h"
 #include <QWidget>
 #include <QLabel>
 #include <QGridLayout>
@@ -60,7 +58,7 @@ private:
     bool mostrarImagen_;
     bool leer_n_rectangulo_;
     bool leer_rectangulos_;
-    QSqlDatabase db_ = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db_;
     QVector<QRect> rectangulo_;
 
 };

@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     capturared.cpp \
     clientsocket.cpp \
     bddialog.cpp \
-    sslserver.cpp
+    sslserver.cpp \
+    thread.cpp
 
 HEADERS  += viewerwindow.h \
     preferenciadialog.h \
@@ -31,7 +32,8 @@ HEADERS  += viewerwindow.h \
     capturared.h \
     clientsocket.h \
     bddialog.h \
-    sslserver.h
+    sslserver.h \
+    thread.h
 
 
 FORMS    += viewerwindow.ui \
