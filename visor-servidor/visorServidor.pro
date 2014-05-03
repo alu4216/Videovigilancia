@@ -40,3 +40,48 @@ FORMS    += viewerwindow.ui \
     capturared.ui \
     bddialog.ui \
     capturared.ui
+
+####################################################################################
+
+#esta parte es para el makefile
+
+unix {          # Esta configuración específica de Linux y UNIX
+    # Variables
+    #
+    isEmpty(PREFIX) {
+        PREFIX = /usr/local
+    }
+    BINDIR  = $$PREFIX/bin
+    DATADIR = $$PREFIX/share
+    CONFDIR = /etc
+    isEmpty(VARDIR) {
+        VARDIR  = /var/lib/$${TARGET}
+    }
+
+    DEFINES += APP_DATADIR=\\\"$$DATADIR\\\"
+    DEFINES += APP_VARDIR=\\\"$$VARDIR\\\"
+    DEFINES += APP_CONFFILE=\\\"$$CONFDIR/$${aki va la direccion}.ini\\\"
+
+    # Install
+    #
+    INSTALLS += target config desktop icon32 vardir
+
+    ## Instalar ejecutable
+    target.path = $$BINDIR
+
+    ## Instalar archivo de configuración
+    config.path = $$CONFDIR
+    config.files += $${aki va la direccion}.ini
+
+    ## Instalar acceso directo en el menú del escritorio
+    #desktop.path = $$DATADIR/applications
+    #desktop.files += $${TARGET}.desktop
+
+    ## Instalar icono de aplicación
+    icon32.path = $$DATADIR/icons/hicolor/32x32/apps
+    icon32.files += ./data/32x32/$${TARGET}.png
+
+    ## Crear directorio de archivos variables
+    vardir.path = $$VARDIR
+    vardir.commands = :
+}
