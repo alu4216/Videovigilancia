@@ -1,8 +1,8 @@
 #include "clientsocket.h"
 
 //Constructor
-ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
-    QObject(parent),sslSocket_(sslSocket_)
+ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
+    QObject(parent),sslSocket_(sslSocket)
 {
     db_ = QSqlDatabase::addDatabase("QSQLITE");
     db_.setDatabaseName("data.sqlite");
@@ -31,6 +31,7 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket_, QObject *parent) :
     label_.setScaledContents(true);
     //Abrir ventana para mostrar imagen
     mostrarImagen_=true;
+    qDebug()<<"ESTOY EN EL CONSTRUCTOR "<< sslSocket_->state();
 }
 //Destructor
 ClientSocket::~ClientSocket()
@@ -42,6 +43,7 @@ ClientSocket::~ClientSocket()
 //Leer datos del socket
 void ClientSocket::readData()
 {
+    qDebug()<<"ESTOY EN READDATA";
     int *size;
     qint64 *tam;
 

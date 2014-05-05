@@ -3,6 +3,7 @@
 Thread::Thread(qintptr socketDescriptor, QObject *parent) :
     QThread(parent),socketDescriptor_(socketDescriptor)
 {
+    init();
 
 }
 Thread::~Thread()
@@ -10,7 +11,7 @@ Thread::~Thread()
     clients_.clear();
 }
 
-void Thread::run()
+void Thread::init()
 {
     QSslSocket * sslSocket = new QSslSocket();
     QSettings settings;
@@ -53,6 +54,7 @@ void Thread::run()
         sslSocket->setProtocol(QSsl::SslV3);
         sslSocket->startServerEncryption();
 
+
         //Ignorar errores producidos
         QList<QSslError> errors;
         errors.append(QSslError::SelfSignedCertificate);
@@ -60,10 +62,9 @@ void Thread::run()
         sslSocket->ignoreSslErrors(errors);
 
         //Crea un nuevo cliente para la conexión entrante
-        ClientSocket *client=new ClientSocket(sslSocket,this);
-        clients_.append(client);
+        ClientSocket *client=new ClientSocket(sslSocket);
+        clients_.append(client);                       //,this
         qDebug()<<"HOLA MUNDOOO";
-
     }
     else
         delete sslSocket;

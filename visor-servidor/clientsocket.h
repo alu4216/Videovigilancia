@@ -23,7 +23,7 @@ class ClientSocket : public QObject
 {
     Q_OBJECT
 public:
-    explicit ClientSocket(QSslSocket * sslSocket_,QObject *parent = 0);
+    explicit ClientSocket(QSslSocket * sslSocket,QObject *parent = 0);
     void guardarImagen(qint64, QImage);
     ~ClientSocket();
 

@@ -15,7 +15,7 @@ class Thread : public QThread
     Q_OBJECT
 public:
     explicit Thread(qintptr socketDescriptor,QObject *parent = 0);
-    void run();
+    void init();
     ~Thread();
 signals:
 
