@@ -8,12 +8,13 @@ class CaptureBuffer : public QAbstractVideoSurface
 {
     Q_OBJECT
 public:
-    explicit CaptureBuffer(QObject *parent = 0){ }
+    explicit CaptureBuffer(){ }
     ~CaptureBuffer() { }
     //Formatos soportados
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType =
             QAbstractVideoBuffer::NoHandle) const
     {
+        Q_UNUSED (handleType);
         QList<QVideoFrame::PixelFormat> formats;
         formats << QVideoFrame::Format_ARGB32;
         formats << QVideoFrame::Format_ARGB32_Premultiplied;
