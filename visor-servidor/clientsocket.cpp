@@ -31,7 +31,6 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
     label_.setScaledContents(true);
     //Abrir ventana para mostrar imagen
     mostrarImagen_=true;
-    qDebug()<<"ESTOY EN EL CONSTRUCTOR "<< sslSocket_->state();
 }
 //Destructor
 ClientSocket::~ClientSocket()
@@ -43,7 +42,6 @@ ClientSocket::~ClientSocket()
 //Leer datos del socket
 void ClientSocket::readData()
 {
-    qDebug()<<"ESTOY EN READDATA";
     int *size;
     qint64 *tam;
 

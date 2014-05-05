@@ -1,16 +1,19 @@
 #include "thread.h"
 
+//Constructor
+//SI SE SOBREESCRIBE EL METODO RUN, PERDEMOS EL BUCLE DE MENSAJES!!
 Thread::Thread(qintptr socketDescriptor, QObject *parent) :
     QThread(parent),socketDescriptor_(socketDescriptor)
 {
     init();
 
 }
+//Destructor
 Thread::~Thread()
 {
     clients_.clear();
 }
-
+//Negociación del protocolo SSL y creación de objeto que manejará la recepción de datos
 void Thread::init()
 {
     QSslSocket * sslSocket = new QSslSocket();
@@ -54,7 +57,6 @@ void Thread::init()
         sslSocket->setProtocol(QSsl::SslV3);
         sslSocket->startServerEncryption();
 
-
         //Ignorar errores producidos
         QList<QSslError> errors;
         errors.append(QSslError::SelfSignedCertificate);
@@ -63,7 +65,7 @@ void Thread::init()
 
         //Crea un nuevo cliente para la conexión entrante
         ClientSocket *client=new ClientSocket(sslSocket);
-        clients_.append(client);                       //,this
+        clients_.append(client);
         qDebug()<<"HOLA MUNDOOO";
     }
     else

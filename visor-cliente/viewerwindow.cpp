@@ -208,13 +208,7 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
     paint.setPen(Qt::green);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignRight |Qt::AlignBottom ,timeString,0);
     paint.drawText(0,0,pixmap.width(),pixmap.height(),Qt::AlignLeft,name,0);
-    int i=0;
-    /* while(rectangulo.size() >= i)//Pintar rectangulos
-    {
-        QRect rect=rectangulo.value(i);
-        paint.drawRect(rect);
-        i++;
-    }*/
+
     ui->label->setPixmap(pixmap);//mostrar imagen en el servidor
     if(sslSocket_!=NULL)
         send_data(pixmap,rectangulo);
@@ -222,8 +216,8 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
 //Enviar datos por el socket cifrado
 void ViewerWindow::send_data(const QPixmap &pixmap,const QVector<QRect> &rectangulo)
 {
-    if (rectangulo.size() != 0){
-        qDebug()<<"ENTRO A DATOS CIFRADOS";
+    if (rectangulo.size() > 0)
+    {
         if(sslSocket_->state()!=3) //reconectar camara al servidor
             reconectar();
         else //Lineas de código para enviar frame y metadatos al servidor
