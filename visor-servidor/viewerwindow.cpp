@@ -10,7 +10,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //variables de configuración del programa
-    QSettings settings;
+   // QSettings settings;
+    QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     indice_ = settings.value("indice").toInt();
     check_ = settings.value("check").toInt();
     ui->checkBox->setChecked(check_);
