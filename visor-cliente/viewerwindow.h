@@ -33,7 +33,7 @@
 #include "ajustesconexion.h"
 #include "deteccion.h"
 #include "cvmatandqimage.h"
-
+#include "mydaemon.h"
 
 namespace Ui {
 class ViewerWindow;
@@ -101,6 +101,7 @@ private:
     };
     Deteccion imageProcesor_;
     QThread hilo_;
+    MyDaemon m_;
 
     //QList <Package>lista;
 };
