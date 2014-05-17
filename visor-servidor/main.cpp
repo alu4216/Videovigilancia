@@ -71,13 +71,13 @@ int main(int argc, char *argv[])
        //Cambiar el usuario efectivo del proceso a 'midemonio'
         //QSettings settings;
         //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
-        passwd* user=getpwnam("midemonio");
+        //passwd* user=getpwnam("midemonio");
         //passwd* user=getpwnam(settings.value("HOSTNSME"));
-        seteuid(user->pw_uid);
+        //seteuid(user->pw_uid);
 
        //Cambiar el grupo efectivo del proceso a 'midemonio'
-        group* group=getgrnam("midemonio");
-        setegid(group->gr_gid);
+        //group* group=getgrnam("midemonio");
+        //setegid(group->gr_gid);
 
        // Cambiar umask
         umask(0);
