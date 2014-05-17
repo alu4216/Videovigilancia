@@ -8,6 +8,7 @@ CapturaRed::CapturaRed(QWidget *parent) :
     ui(new Ui::CapturaRed)
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     ui->setupUi(this);
     QString puerto=settings.value("Puertos/puerto",15000).toString();
     ui->lineEdit->setText(puerto);
@@ -27,6 +28,7 @@ void CapturaRed::on_pushComenzar_clicked()
 void CapturaRed::on_pushCambiar_clicked()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     int puerto= ui->lineEdit->text().toInt();
     settings.setValue("Puertos/puerto",puerto);
 }

@@ -267,7 +267,8 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     tt.insert(s1, QString("/"));
     tt.insert(s2, QString("/"));
     QString ttImage2 = tt;
-    tt.push_front("./");
+    //tt.push_front("./");
+    tt.push_front(APP_VARDIR);
     QString ttImage = tt;
     ttImage.push_back(".JPEG");
     tt.truncate(sI);

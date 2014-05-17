@@ -36,6 +36,17 @@
 #include "bddialog.h"
 #include "sslserver.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <iostream>
+#include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <syslog.h>
+#include <fstream>
+#include <stdio.h>
+
 
 
 namespace Ui {
@@ -85,6 +96,7 @@ private:
     int puerto_;
     QString ip_;
     QSqlDatabase db_;
+
 };
 
 #endif // VIEWERWINDOW_H

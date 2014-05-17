@@ -18,6 +18,7 @@ void Thread::init()
 {
     QSslSocket * sslSocket = new QSslSocket();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     if(sslSocket->setSocketDescriptor(socketDescriptor_))
     {
         QString key;

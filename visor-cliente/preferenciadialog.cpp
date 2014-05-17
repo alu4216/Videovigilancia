@@ -12,6 +12,7 @@ PreferenciaDialog::PreferenciaDialog(const QList<QByteArray> &devices,QWidget * 
     qDebug()<< "Tamaño de...."
             <<devices.size();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     int i=0;
     do {
         ui->comboBox->addItem(QCamera::deviceDescription(devices[i]));
@@ -30,6 +31,7 @@ void PreferenciaDialog::on_pushOk_clicked()
 {
     indice_=ui->comboBox->currentIndex();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     settings.setValue("indice",indice_);
     emit s_camera(indice_);
     close();

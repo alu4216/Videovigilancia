@@ -97,6 +97,7 @@ void ViewerWindow::on_actionAbrirImagen_triggered()
 void ViewerWindow::on_actionAbrirVideo_triggered()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
 
@@ -202,6 +203,7 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
     QTime time = QTime::currentTime();
     QString timeString = time.toString();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString name=settings.value("Network/Camara","INFO").toString();
     QPixmap pixmap;
     pixmap=pixmap.fromImage(image);
@@ -234,6 +236,7 @@ void ViewerWindow::send_data(const QPixmap &pixmap,const QVector<QRect> &rectang
             imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
             QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
             QSettings settings;
+            //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
 
             //Struct de información total a enviar
             Package package;
@@ -317,6 +320,7 @@ void ViewerWindow::on_actionAjustes_Conexion_triggered()
 void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
 
@@ -339,6 +343,7 @@ void ViewerWindow::reconectar()
 {
     sslSocket_->disconnect();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
     sslSocket_->setProtocol(QSsl::SslV3);

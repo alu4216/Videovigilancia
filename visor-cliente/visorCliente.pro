@@ -71,12 +71,12 @@ unix {          # Esta configuración específica de Linux y UNIX
     BINDIR  = $$PREFIX/bin
     #DATADIR = $$PREFIX/share
     CONFDIR = /etc/xdg
-    isEmpty(VARDIR) {
-        VARDIR  = /var/lib/$${TARGET}
-    }
+    #isEmpty(VARDIR) {
+    #    VARDIR  = /var/lib/$${TARGET}//NO necesitamos esto xq el cliente no guarda imagenes
+    #}
 
-    DEFINES += APP_DATADIR=\\\"$$DATADIR\\\"
-    DEFINES += APP_VARDIR=\\\"$$VARDIR\\\"
+    #DEFINES += APP_DATADIR=\\\"$$DATADIR\\\"
+    #DEFINES += APP_VARDIR=\\\"$$VARDIR\\\"
     DEFINES += APP_CONFFILE=\\\"$$CONFDIR/$${TARGET}.ini\\\"
 
     # Install
@@ -99,6 +99,6 @@ unix {          # Esta configuración específica de Linux y UNIX
     #icon32.files += ./data/32x32/$${TARGET}.png
 
     ## Crear directorio de archivos variables
-    vardir.path = $$VARDIR
-    vardir.commands = :
+    #vardir.path = $$VARDIR
+    #vardir.commands = :
 }

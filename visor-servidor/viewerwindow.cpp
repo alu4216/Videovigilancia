@@ -10,8 +10,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     ui->setupUi(this);
     db_= QSqlDatabase::addDatabase("QSQLITE");
     //variables de configuración del programa
-   // QSettings settings;
-    QSettings settings(APP_CONFFILE, QSettings::IniFormat);
+    QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     indice_ = settings.value("indice").toInt();
     check_ = settings.value("check").toInt();
     ui->checkBox->setChecked(check_);
@@ -219,6 +219,7 @@ void ViewerWindow::on_actionCaptura_de_Red_triggered()
 void ViewerWindow::capture_s()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     int puerto=settings.value("Puertos/puerto",15000).toInt();
     sslServer_= new SslServer();
     QString ipAddress;

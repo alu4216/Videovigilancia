@@ -19,6 +19,7 @@ AjustesConexion::~AjustesConexion()
 void AjustesConexion::ajustes_s()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     int puerto= ui->lineEdit_puerto->text().toInt();
     QString ip=ui->lineEdit_ip->text();
     settings.setValue("Network/puerto",puerto);
@@ -29,6 +30,7 @@ void AjustesConexion::ajustes_s()
 void AjustesConexion::porDefecto_s()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     settings.setValue("Network/puerto",15000);
     settings.setValue("Network/ip",QString("127.0.0.1"));
     close();

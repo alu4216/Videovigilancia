@@ -55,6 +55,8 @@ unix {          # Esta configuración específica de Linux y UNIX
     }
     MOC_DIR= ./moc
     OBJECTS_DIR=./object
+    SCRITP_DIR= ./scritp
+
     BINDIR  = $$PREFIX/bin
     #DATADIR = $$PREFIX/share
     CONFDIR = /etc/xdg
@@ -88,4 +90,8 @@ unix {          # Esta configuración específica de Linux y UNIX
     ## Crear directorio de archivos variables
     vardir.path = $$VARDIR
     vardir.commands = :
+
+    ## Meter script en una carpeta
+
 }
+
