@@ -9,8 +9,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Josue");
     QCoreApplication::setApplicationName("Cliente-Visor");
     ViewerWindow w;
-    if(*argv[1] == 'v') {
-        w.show();
+    if(argc > 1){
+        if(*argv[1] == 'v') {
+            w.show();
+        }
     }
     return a.exec();
 }

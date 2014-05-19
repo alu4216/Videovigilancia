@@ -329,7 +329,7 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 {
     qDebug() << "Comenzar a enviar";
     QSettings settings;
-    QString ip = "10.159.0.174"; //settings.value("Network/ip",QString("127.0.0.1")).toString();
+    QString ip = "192.168.1.38"; //settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = 15000; //settings.value("Network/puerto",15000).toInt();
 
     if(sslSocket_==NULL)

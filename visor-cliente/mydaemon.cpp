@@ -106,7 +106,7 @@ void MyDaemon::handleSigInt()
     qDebug("Disconnected");
     QApplication::quit();
     //QCoreApplication::quit();
-    deleteLater();
+    //deleteLater();
 
     sigHupNotifier->setEnabled(true);
 }
