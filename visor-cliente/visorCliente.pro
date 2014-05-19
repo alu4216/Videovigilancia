@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     preferenciadialog.cpp \
     capturebuffer.cpp \
     ajustesconexion.cpp \
-    deteccion.cpp
+    deteccion.cpp \
+    mydaemon.cpp
 
 
 HEADERS  += viewerwindow.h \
@@ -29,7 +30,8 @@ HEADERS  += viewerwindow.h \
     acerca.h \
     capturebuffer.h \
     ajustesconexion.h \
-    deteccion.h
+    deteccion.h \
+    mydaemon.h
 
 
 FORMS    += viewerwindow.ui \
@@ -43,6 +45,7 @@ add_opencv_modules(core video imgproc)
 
 
 INCLUDEPATH += /usr/local/include
+LIBS += -framework CoreFoundation
 LIBS += -L/usr/local/lib \
     -lopencv_core \
     -lopencv_imgproc \

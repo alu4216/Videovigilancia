@@ -25,6 +25,10 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     sslSocket_ = NULL;
     estado_=false;
     devices_ = QCamera::availableDevices();
+
+    //iniciar el servicio del demonio para el cliente:
+    setupUnixSignalHandlers();
+
     settings.setValue("HOSTNAME", QHostInfo::localHostName());
     qRegisterMetaType< QVector<QRect> >("QVector<QRect>");// Registra QVector<QRect> como tipo en qt
     // para reconocerlo al hacer connect
@@ -38,6 +42,9 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
 
     imageProcesor_.moveToThread(&hilo_);// Migrar la instancia de imageProcesor al hilo de trabajo
     hilo_.start();// Iniciar el hilo de trabajo
+
+    on_actionComenzar_a_enviar_triggered();
+    qDebug() << "ya";
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -101,7 +108,10 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     int puerto = settings.value("Network/puerto",15000).toInt();
 
     if(sslSocket_==NULL)
+    {
         sslSocket_ = new QSslSocket(this);
+        //m_.setSslSocket(sslSocket_);
+    }
     else
     {
         sslSocket_->disconnect();
@@ -178,6 +188,7 @@ void ViewerWindow::on_actionAcercaDe_triggered()
 //Capturar imagenes de la cámra
 void ViewerWindow::on_actionCapturar_triggered()
 {
+    qDebug() << "entra en onactioncapturar";
     if(movie_!=NULL)
     {
         delete movie_;
@@ -316,12 +327,16 @@ void ViewerWindow::on_actionAjustes_Conexion_triggered()
 //Conectar con el servidor y activar el envío de datos(camara)
 void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 {
+    qDebug() << "Comenzar a enviar";
     QSettings settings;
-    QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
-    int puerto = settings.value("Network/puerto",15000).toInt();
+    QString ip = "192.168.1.38"; //settings.value("Network/ip",QString("127.0.0.1")).toString();
+    int puerto = 15000; //settings.value("Network/puerto",15000).toInt();
 
     if(sslSocket_==NULL)
+    {
         sslSocket_ = new QSslSocket(this);
+        //m_.setSslSocket(sslSocket_);
+    }
     else
     {
         sslSocket_->disconnect();
