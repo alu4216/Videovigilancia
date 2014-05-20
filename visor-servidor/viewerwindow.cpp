@@ -36,6 +36,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
     }
+    QSqlQuery query3;
+    query3.exec("PRAGMA synchronous = 0");
     QSqlQuery query;
     query.exec("create table if not exists Datos"
                "(id integer primary key autoincrement, "

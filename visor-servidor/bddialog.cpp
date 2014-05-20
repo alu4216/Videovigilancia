@@ -7,6 +7,7 @@ BDDialog::BDDialog(QWidget *parent) :
     ui(new Ui::BDDialog)
 {
     db_ = QSqlDatabase::addDatabase("QSQLITE");
+
     ui->setupUi(this);
     QString string=APP_DATADIR;
     string+="/data.sqlite";
@@ -16,6 +17,8 @@ BDDialog::BDDialog(QWidget *parent) :
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
     }
+    QSqlQuery query3;
+    query3.exec("PRAGMA synchronous = 0");
     QSqlQuery query;
     ui->listWidget->clear();
     query.exec("SELECT timestamp FROM Datos");

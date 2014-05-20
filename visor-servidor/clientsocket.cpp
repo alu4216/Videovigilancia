@@ -15,6 +15,8 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
     }
+    QSqlQuery query3;
+    query3.exec("PRAGMA synchronous = 0");
     leer_cabecera_=false;
     leer_imagen_=false; //10.213.3.6
     leer_timestamp_=true;
