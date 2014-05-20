@@ -9,8 +9,8 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //variables de configuración del programa
-    //QSettings settings;
-    QSettings settings(APP_CONFFILE, QSettings::IniFormat);
+    QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     indice_ = settings.value("indice").toInt();
     check_ = settings.value("check").toInt();
     ui->checkBox->setChecked(check_);
@@ -191,6 +191,7 @@ void ViewerWindow::on_actionCapturar_triggered()
         camera_->setViewfinder(captureBuffer_);
         camera_->start();
     }
+    qDebug()<<"conectado con el servidor";
     //Conectar señales
     connect(captureBuffer_,SIGNAL(s_image(const QImage&)),&imageProcesor_,SLOT(Procesador_imagen(const QImage &)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
@@ -336,7 +337,7 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
 
-    connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+    connect(sslSocket_,SIGNAL(encrypted()),this,SLOT(on_actionCapturar_triggered()));
 }
 //Reconectar con el servidor automáticamente
 void ViewerWindow::reconectar()

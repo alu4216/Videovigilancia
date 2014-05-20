@@ -1,11 +1,12 @@
 #include "clientsocket.h"
-
+#include <syslog.h>
 //Constructor
 ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
     QObject(parent),sslSocket_(sslSocket)
 {
+    syslog(LOG_NOTICE, "ENTRO A clientesocket\n");
     db_ = QSqlDatabase::addDatabase("QSQLITE");
-    db_.setDatabaseName("data.sqlite");
+    db_.setDatabaseName("/tmp/data.sqlite");
     if (!db_.open())
     {
         QMessageBox::critical(NULL, tr("Error"),
@@ -232,7 +233,7 @@ void ClientSocket::readData()
                     paint.drawRect(rect);
                     i++;
                 }
-                //guardarImagen(timestamp_, image_);
+                guardarImagen(timestamp_, image_);
                 rectangulo_.clear();
                 if(mostrarImagen_==true)
                 {
@@ -259,6 +260,7 @@ void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
 }
 //Guardar imagenes en directores segun el timestamp
 void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
+    syslog(LOG_NOTICE, "ENTRO A guardar imagen\n");
     qint32 szHx = 16;
     qint32 s1 = 4;
     qint32 s2 = 8;
@@ -267,8 +269,8 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     tt.insert(s1, QString("/"));
     tt.insert(s2, QString("/"));
     QString ttImage2 = tt;
-    //tt.push_front("./");
-    tt.push_front(APP_VARDIR);
+    tt.push_front("./tmp/Image/");
+  //  tt.push_front(APP_VARDIR);
     QString ttImage = tt;
     ttImage.push_back(".JPEG");
     tt.truncate(sI);
