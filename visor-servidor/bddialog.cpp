@@ -8,7 +8,9 @@ BDDialog::BDDialog(QWidget *parent) :
 {
     db_ = QSqlDatabase::addDatabase("QSQLITE");
     ui->setupUi(this);
-    db_.setDatabaseName("data.sqlite");
+    QString string=APP_DATADIR;
+    string+="/data.sqlite";
+    db_.setDatabaseName(string);
     if (!db_.open())
     {
         QMessageBox::critical(NULL, tr("Error"),

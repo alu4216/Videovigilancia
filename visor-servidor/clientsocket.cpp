@@ -1,18 +1,22 @@
 #include "clientsocket.h"
-
+#include <syslog.h>
+#include <time.h>
 //Constructor
 ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
     QObject(parent),sslSocket_(sslSocket)
 {
+    syslog(LOG_NOTICE, "ENTRO A clientesocket\n");
     db_ = QSqlDatabase::addDatabase("QSQLITE");
-    db_.setDatabaseName("data.sqlite");
+    QString string=APP_DATADIR;
+    string+="/data.sqlite";
+    db_.setDatabaseName(string);
     if (!db_.open())
     {
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
     }
     leer_cabecera_=false;
-    leer_imagen_=false;
+    leer_imagen_=false; //10.213.3.6
     leer_timestamp_=true;
     leer_size_string_=false;
     leer_string_=false;
@@ -32,7 +36,6 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
     //Abrir ventana para mostrar imagen
     mostrarImagen_=true;
 }
-//Destructor
 ClientSocket::~ClientSocket()
 {
     delete sslSocket_;
@@ -50,6 +53,7 @@ void ClientSocket::readData()
     {
         if(sslSocket_->bytesAvailable()>=8)
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             data_=sslSocket_->read(8);
             tam=reinterpret_cast<qint64*>(data_.data());
             timestamp_=*tam;
@@ -64,6 +68,8 @@ void ClientSocket::readData()
             leer_string_=false;
             leer_n_rectangulo_=false;
             leer_rectangulos_=false;
+            clock = QDateTime::currentMSecsSinceEpoch()-clock;
+            qDebug() << "Tiempo para leer el timestamp: " << clock;
         }
     }
     //Estado leer cabecera(tamaño imagen)
@@ -71,6 +77,7 @@ void ClientSocket::readData()
     {
         if((sslSocket_->bytesAvailable())>=4)//Si existe los suficientes datos
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             data_=sslSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             imagen_size_=*size;
@@ -86,6 +93,8 @@ void ClientSocket::readData()
             leer_string_=false;
             leer_n_rectangulo_=false;
             leer_rectangulos_=false;
+            clock = QDateTime::currentMSecsSinceEpoch()-clock;
+            qDebug() << "Tiempo para leer el tamaño de la imagen" << clock;
         }
     }
     //Estado leer imagen
@@ -93,6 +102,7 @@ void ClientSocket::readData()
     {
         if((sslSocket_->bytesAvailable())>=imagen_size_)
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             data_=sslSocket_->read(imagen_size_);
             QImage image;
             image.loadFromData(data_,"JPEG");
@@ -106,7 +116,8 @@ void ClientSocket::readData()
             leer_string_=false;
             leer_n_rectangulo_=false;
             leer_rectangulos_=false;
-
+            clock = QDateTime::currentMSecsSinceEpoch()-clock;
+        qDebug() << "Tiempo para leer la imagen" << clock;
 
         }
     }
@@ -115,6 +126,7 @@ void ClientSocket::readData()
     {
         if(sslSocket_->bytesAvailable()>=4)
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             data_=sslSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             string_size_=*size;
@@ -130,6 +142,8 @@ void ClientSocket::readData()
             leer_string_=true;
             leer_n_rectangulo_=false;
             leer_rectangulos_=false;
+            clock = QDateTime::currentMSecsSinceEpoch()-clock;
+            qDebug() << "Tiempo para leer el tamaño de la cadena" << clock;
         }
     }
     //Leer cadena
@@ -137,6 +151,7 @@ void ClientSocket::readData()
     {
         if(sslSocket_->bytesAvailable()>=string_size_)
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             data_=sslSocket_->read(string_size_);
             string_=QString::fromLatin1(data_.data(),string_size_);
             qDebug()<<"CADENA: "<<string_;
@@ -151,7 +166,8 @@ void ClientSocket::readData()
             leer_string_=false;
             leer_n_rectangulo_=true;
             leer_rectangulos_=false;
-
+            clock = QDateTime::currentMSecsSinceEpoch()-clock;
+        qDebug() << "Tiempo para leer la cadena" << clock;
         }
     }
     //Leer número de rectangulos
@@ -159,6 +175,7 @@ void ClientSocket::readData()
     {
         if(sslSocket_->bytesAvailable()>=4)
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             data_=sslSocket_->read(4);
             size=reinterpret_cast<int*>(data_.data());
             rectangulo_size_=*size;
@@ -172,6 +189,8 @@ void ClientSocket::readData()
             leer_string_=false;
             leer_n_rectangulo_=false;
             leer_rectangulos_=true;
+            clock = QDateTime::currentMSecsSinceEpoch()-clock;
+            qDebug() << "Tiempo para leer el numero de rectangulos" << clock;
         }
     }
     //leer rectangulos
@@ -179,6 +198,7 @@ void ClientSocket::readData()
     {
         if(sslSocket_->bytesAvailable()>=16)
         {
+            qint64 clock = QDateTime::currentMSecsSinceEpoch();
             if(rectangulo_size_>0)
             {
                 data_=sslSocket_->read(4);
@@ -232,7 +252,13 @@ void ClientSocket::readData()
                     paint.drawRect(rect);
                     i++;
                 }
-                //guardarImagen(timestamp_, image_);
+                clock = QDateTime::currentMSecsSinceEpoch()-clock;
+                qDebug() << "Tiempo para leer todos los rectangulos" << clock;
+                qint64 clock = QDateTime::currentMSecsSinceEpoch();
+                guardarImagen(timestamp_, image_);
+                clock = QDateTime::currentMSecsSinceEpoch()-clock;
+                qDebug() << "Tiempo para almacenar la imagen y actualizar la base de datos" << clock;
+                //termino de guardar la imagen
                 rectangulo_.clear();
                 if(mostrarImagen_==true)
                 {
@@ -259,15 +285,18 @@ void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
 }
 //Guardar imagenes en directores segun el timestamp
 void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
+    syslog(LOG_NOTICE, "ENTRO A guardar imagen\n");
     qint32 szHx = 16;
     qint32 s1 = 4;
     qint32 s2 = 8;
-    qint32 sI = 11;
+    qint32 sI = 21;
     QString tt=QString::number(timestamp,szHx);
     tt.insert(s1, QString("/"));
     tt.insert(s2, QString("/"));
     QString ttImage2 = tt;
-    tt.push_front("./");
+    QString string=APP_DATADIR;
+    string+="/";
+    tt.push_front(string);
     QString ttImage = tt;
     ttImage.push_back(".JPEG");
     tt.truncate(sI);

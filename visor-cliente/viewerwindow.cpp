@@ -104,6 +104,7 @@ void ViewerWindow::on_actionAbrirImagen_triggered()
 void ViewerWindow::on_actionAbrirVideo_triggered()
 {
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
 
@@ -201,6 +202,7 @@ void ViewerWindow::on_actionCapturar_triggered()
         camera_->setViewfinder(captureBuffer_);
         camera_->start();
     }
+    qDebug()<<"conectado con el servidor";
     //Conectar señales
     connect(captureBuffer_,SIGNAL(s_image(const QImage&)),&imageProcesor_,SLOT(Procesador_imagen(const QImage &)));
     connect(ui->push_Start,SIGNAL(clicked()),camera_,SLOT(start()));
@@ -213,6 +215,7 @@ void ViewerWindow::image_s(const QImage &image,const QVector<QRect> &rectangulo)
     QTime time = QTime::currentTime();
     QString timeString = time.toString();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString name=settings.value("Network/Camara","INFO").toString();
     QPixmap pixmap;
     pixmap=pixmap.fromImage(image);
@@ -245,6 +248,7 @@ void ViewerWindow::send_data(const QPixmap &pixmap,const QVector<QRect> &rectang
             imageWriter.write(imageSend); // imagen sobre la cual aplicar las opciones anteriores y guardarla en buffer
             QByteArray bytes = buffer.buffer(); //acceder a los bytes almacenados en el buffer
             QSettings settings;
+            //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
 
             //Struct de información total a enviar
             Package package;
@@ -329,8 +333,9 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
 {
     qDebug() << "Comenzar a enviar";
     QSettings settings;
-    QString ip = "192.168.1.38"; //settings.value("Network/ip",QString("127.0.0.1")).toString();
-    int puerto = 15000; //settings.value("Network/puerto",15000).toInt();
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
+    QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
+    int puerto = settings.value("Network/puerto",15000).toInt();
 
     if(sslSocket_==NULL)
     {
@@ -347,13 +352,14 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
 
-    connect(sslSocket_,SIGNAL(connected()),this,SLOT(on_actionCapturar_triggered()));
+    connect(sslSocket_,SIGNAL(encrypted()),this,SLOT(on_actionCapturar_triggered()));
 }
 //Reconectar con el servidor automáticamente
 void ViewerWindow::reconectar()
 {
     sslSocket_->disconnect();
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString ip = settings.value("Network/ip",QString("127.0.0.1")).toString();
     int puerto = settings.value("Network/puerto",15000).toInt();
     sslSocket_->setProtocol(QSsl::SslV3);

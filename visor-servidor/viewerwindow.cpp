@@ -7,6 +7,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ViewerWindow)
 {
+    syslog(LOG_NOTICE, "ENTRO A viewer\n");
     ui->setupUi(this);
     db_= QSqlDatabase::addDatabase("QSQLITE");
     //variables de configuración del programa
@@ -25,8 +26,12 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     sslServer_= NULL;
     capturaRed_= NULL;
     devices_ = QCamera::availableDevices();
+    capture_s();
+    qDebug()<<"ENTRO A viewer";
     //Asignación del nombre de la base de datos y creación de la tabla
-    db_.setDatabaseName("data.sqlite");
+    QString string=APP_DATADIR;
+    string+="/data.sqlite";
+    db_.setDatabaseName(string);
     if (!db_.open()) {
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
@@ -211,6 +216,7 @@ void ViewerWindow::actualizar_s(int i)
 //Ventana de captura de red. Preferencias de la captura de red
 void ViewerWindow::on_actionCaptura_de_Red_triggered()
 {
+    syslog(LOG_NOTICE, "ENTRO A captura de red\n");
     capturaRed_= new CapturaRed();
     capturaRed_->show();
     connect(capturaRed_,SIGNAL(s_capture()),this,SLOT(capture_s()));
@@ -218,7 +224,9 @@ void ViewerWindow::on_actionCaptura_de_Red_triggered()
 //Inicio de la captura de red
 void ViewerWindow::capture_s()
 {
+    syslog(LOG_NOTICE, "ENTRO A capture s\n");
     QSettings settings;
+    //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     int puerto=settings.value("Puertos/puerto",15000).toInt();
     sslServer_= new SslServer();
     QString ipAddress;
@@ -246,6 +254,8 @@ void ViewerWindow::capture_s()
     }
     ui->label->setText(tr("El servidor está corriendo en la: \n\nIP: %1\nPuerto: %2\n\n"
                           "Envia imágenes ahora.").arg(ipAddress).arg(puerto));
+
+    syslog(LOG_NOTICE, "ENTRO A finalllll captura s\n");
 }
 //Muestra el guión de las consultas a la base de datos
 void ViewerWindow::on_actionBase_de_datos_triggered()

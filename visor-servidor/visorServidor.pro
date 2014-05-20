@@ -55,10 +55,14 @@ unix {          # Esta configuración específica de Linux y UNIX
     }
     MOC_DIR= ./moc
     OBJECTS_DIR=./object
+    SCRITP_DIR= ./scritp
+
     BINDIR  = $$PREFIX/bin
-    #DATADIR = $$PREFIX/share
+    DATADIR = /etc/visor
     CONFDIR = /etc/xdg
-    isEmpty(VARDIR) {
+    SCRIPT = /etc/init.d
+
+isEmpty(VARDIR) {
         VARDIR  = /var/lib/$${TARGET}
     }
 
@@ -68,7 +72,7 @@ unix {          # Esta configuración específica de Linux y UNIX
 
     # Install
     #
-    INSTALLS += target config vardir
+    INSTALLS += target config vardir script
 
     ## Instalar ejecutable
     target.path = $$BINDIR
@@ -88,4 +92,9 @@ unix {          # Esta configuración específica de Linux y UNIX
     ## Crear directorio de archivos variables
     vardir.path = $$VARDIR
     vardir.commands = :
+
+    ## Meter script en una carpeta
+    script.path = $$SCRIPT
+    script.files += $${TARGET}.sh
 }
+

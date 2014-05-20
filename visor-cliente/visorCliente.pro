@@ -50,7 +50,6 @@ LIBS += -L/usr/local/lib \
     -lopencv_core \
     -lopencv_imgproc \
     -lopencv_video
-
 #OTHER_FILES += \
     #opencv.pri
     #QtOpenCV.pri
@@ -72,14 +71,8 @@ unix {          # Esta configuración específica de Linux y UNIX
     MOC_DIR= ./moc
     OBJECTS_DIR=./object
     BINDIR  = $$PREFIX/bin
-    #DATADIR = $$PREFIX/share
     CONFDIR = /etc/xdg
-    isEmpty(VARDIR) {
-        VARDIR  = /var/lib/$${TARGET}
-    }
 
-    DEFINES += APP_DATADIR=\\\"$$DATADIR\\\"
-    DEFINES += APP_VARDIR=\\\"$$VARDIR\\\"
     DEFINES += APP_CONFFILE=\\\"$$CONFDIR/$${TARGET}.ini\\\"
 
     # Install
@@ -101,7 +94,4 @@ unix {          # Esta configuración específica de Linux y UNIX
     #icon32.path = $$DATADIR/icons/hicolor/32x32/apps
     #icon32.files += ./data/32x32/$${TARGET}.png
 
-    ## Crear directorio de archivos variables
-    vardir.path = $$VARDIR
-    vardir.commands = :
 }
