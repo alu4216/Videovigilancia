@@ -286,6 +286,11 @@ void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
 //Guardar imagenes en directores segun el timestamp
 void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     syslog(LOG_NOTICE, "ENTRO A guardar imagen\n");
+
+
+    qint64 clock = QDateTime::currentMSecsSinceEpoch();
+
+
     qint32 szHx = 16;
     qint32 s1 = 4;
     qint32 s2 = 8;
@@ -303,6 +308,9 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
     QDir carpetaNueva;
     carpetaNueva.mkpath(tt);
     imagen.save(ttImage);
+    clock = QDateTime::currentMSecsSinceEpoch()-clock;
+    qDebug() << "TIEMPO PARA ALMACENAR LA IMAGEN ======> " << clock;
+    qint64 clock1 = QDateTime::currentMSecsSinceEpoch();
     ttImage2.push_front("/");
     ttImage2.push_front(QDir::currentPath());
     QSqlQuery query;
@@ -330,4 +338,6 @@ void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
         query2.bindValue(":ancho", rectangulo_[i].width());
         query2.exec();
     }
+    clock1 = QDateTime::currentMSecsSinceEpoch()-clock1;
+    qDebug() << "TIEMPO PARA ACTUALIZAR LA BASE DE DATOS ======> " << clock1;
 }
