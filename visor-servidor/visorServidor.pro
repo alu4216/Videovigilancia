@@ -53,8 +53,8 @@ unix {          # Esta configuración específica de Linux y UNIX
     isEmpty(PREFIX) {
         PREFIX = /usr/local
     }
-    MOC_DIR= ./moc
-    OBJECTS_DIR=./object
+    MOC_DIR= /etc/visor/moc
+    OBJECTS_DIR=/etc/visor/object
     SCRITP_DIR= ./scritp
 
     BINDIR  = $$PREFIX/bin
