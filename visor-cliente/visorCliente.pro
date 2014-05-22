@@ -45,24 +45,15 @@ add_opencv_modules(core video imgproc)
 
 
 INCLUDEPATH += /usr/local/include
-LIBS += -framework CoreFoundation
 LIBS += -L/usr/local/lib \
     -lopencv_core \
     -lopencv_imgproc \
     -lopencv_video
-#OTHER_FILES += \
-    #opencv.pri
-    #QtOpenCV.pri
-
-
-#unix: CONFIG += link_pkgconfig
-#unix: PKGCONFIG += libopencv
-
 
 ####################################################################################
 
-#esta parte es para el makefile
-unix {          # Esta configuración específica de Linux y UNIX
+unix {
+    # Esta configuración específica de Linux y UNIX
     # Variables
     #
     isEmpty(PREFIX) {
@@ -85,13 +76,4 @@ unix {          # Esta configuración específica de Linux y UNIX
     ## Instalar archivo de configuración
     config.path = $$CONFDIR
     config.files += $${TARGET}.ini
-
-    ## Instalar acceso directo en el menú del escritorio
-    #desktop.path = $$DATADIR/applications
-    #desktop.files += $${TARGET}.desktop
-
-    ## Instalar icono de aplicación
-    #icon32.path = $$DATADIR/icons/hicolor/32x32/apps
-    #icon32.files += ./data/32x32/$${TARGET}.png
-
 }

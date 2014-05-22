@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSettings>
+
 namespace Ui {
 class AjustesConexion;
 }

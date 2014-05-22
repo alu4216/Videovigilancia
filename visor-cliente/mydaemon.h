@@ -27,8 +27,6 @@ class MyDaemon : public QObject
         static void termSignalHandler(int);
         static void intSignalHandler(int);
 
-        //void setSslSocket(QSslSocket *);
-
     public slots:
         // Slot donde atender la señal POSIX SIGTERM cuando la
         // convirtamos en una señal de Qt
@@ -37,14 +35,11 @@ class MyDaemon : public QObject
         void handleSigInt();
 
     private:
-        // Pareja de sockets. Un par por señal a manejar.
-        // En este caso es para la señal SIGTERM
+
         static int sigTermSd[2];
         static int sigHupSd[2];
         static int sigIntSd[2];
-        //QSslSocket * sslSocket_;
-        // Objeto para monitorizar la pareja de sockets
-        // sigTermSd[2]
+
         QSocketNotifier *sigTermNotifier;
         QSocketNotifier *sigHupNotifier;
         QSocketNotifier *sigIntNotifier;

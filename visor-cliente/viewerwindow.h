@@ -72,9 +72,6 @@ private slots:
     void actualizar_s(int);
     void image_s(const QImage&, const QVector<QRect> &rectangulo);
 
-    //void vectorImage(const QImage img, const QVector<QRect> &rectangulo);
-
-
 private:
     Ui::ViewerWindow * ui;
     QMovie * movie_;
@@ -102,8 +99,6 @@ private:
     Deteccion imageProcesor_;
     QThread hilo_;
     MyDaemon m_;
-
-    //QList <Package>lista;
 };
 
 #endif // VIEWERWINDOW_H

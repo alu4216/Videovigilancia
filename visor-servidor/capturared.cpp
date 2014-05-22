@@ -1,6 +1,6 @@
 #include "capturared.h"
 #include "ui_capturared.h"
-#include <syslog.h>
+
 //Constructor
 //Configura puerto de conexión
 CapturaRed::CapturaRed(QWidget *parent) :

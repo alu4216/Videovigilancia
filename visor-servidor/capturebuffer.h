@@ -25,8 +25,8 @@ public:
         formats << QVideoFrame::Format_RGB565;
         formats << QVideoFrame::Format_RGB555;
         return formats;
-
     }
+
     bool present(const QVideoFrame &frame);
 
 signals:

@@ -7,7 +7,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ViewerWindow)
 {
-    syslog(LOG_NOTICE, "ENTRO A viewer\n");
     ui->setupUi(this);
     db_= QSqlDatabase::addDatabase("QSQLITE");
     //variables de configuración del programa

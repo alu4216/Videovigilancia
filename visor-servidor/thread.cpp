@@ -67,7 +67,6 @@ void Thread::init()
         //Crea un nuevo cliente para la conexión entrante
         ClientSocket *client=new ClientSocket(sslSocket);
         clients_.append(client);
-        qDebug()<<"HOLA MUNDOOO";
     }
     else
         delete sslSocket;

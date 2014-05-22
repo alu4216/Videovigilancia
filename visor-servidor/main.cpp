@@ -1,4 +1,3 @@
-
 #include "viewerwindow.h"
 #include <QApplication>
 #include "pwd.h"
@@ -14,7 +13,6 @@ int main(int argc, char *argv[])
     if(argc >= 3)
     {
         qDebug()<<"ENTRO A DEMONIO";
-        qDebug()<<argc;
         daemon = true;
         pid_t pid;
 
@@ -23,7 +21,7 @@ int main(int argc, char *argv[])
 
         // Si pid es < 0, fork() falló
         if (pid < 0)
-    {
+        {
             // Mostrar la descripción del error y terminar
             std::cerr << strerror(errno) << std::endl;
             exit(10);
@@ -36,7 +34,6 @@ int main(int argc, char *argv[])
 
             exit(0);
         }
-
         // Cambiar umask
         umask(0);
 
@@ -44,13 +41,15 @@ int main(int argc, char *argv[])
         openlog(argv[0], LOG_NOWAIT | LOG_PID, LOG_USER);
 
         // Intentar crear una nueva sesión
-        if (setsid() < 0) {
+        if (setsid() < 0)
+        {
             syslog(LOG_ERR, "No fue posible crear una nueva sesión\n");
             exit(11);
         }
 
         // Cambiar directorio de trabajo
-        if ((chdir("/")) < 0) {
+        if ((chdir("/")) < 0)
+        {
             syslog(LOG_ERR, "No fue posible cambiar el directorio de trabajo a /\n");
             exit(12);
         }
@@ -65,7 +64,9 @@ int main(int argc, char *argv[])
         int fd0 = open("/dev/null", O_RDONLY);  // fd0 == 0
         int fd1 = open("/dev/null", O_WRONLY);  // fd0 == 1
         int fd2 = open("/dev/null", O_WRONLY);  // fd0 == 2
-
+        Q_UNUSED(fd0);
+        Q_UNUSED(fd1);
+        Q_UNUSED(fd2);
 
         //Cambiar el usuario efectivo del proceso a 'midemonio'
         QSettings settings;
@@ -88,13 +89,10 @@ int main(int argc, char *argv[])
         }
         setegid(group->gr_gid);
 
-
-
         //Enviar un mensaje al demonio syslog
         syslog(LOG_NOTICE, "Demonio iniciado con éxito\n");
 
         // Hacer archivo con PID
-
         std::fstream out( (QString("/var/run/") + argv[0] + ".pid").toStdString().c_str());
         out << pid;
         out.close();
@@ -104,15 +102,12 @@ int main(int argc, char *argv[])
         std::cout << "Parametro incorrecto" << std::endl;
 
     // Inicio del programa
-    syslog(LOG_NOTICE, "ENTRO A MAIN\n");
     ViewerWindow w;
-    qDebug()<<"despues de viewer";
     if(argc >= 2)
     {
         if(*argv[1]=='v')
             w.show();
     }
-    syslog(LOG_NOTICE, "ENTRO A en a.exec\n");
     int d = a.exec();
 
     if(daemon)

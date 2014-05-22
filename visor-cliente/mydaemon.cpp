@@ -1,9 +1,11 @@
 #include "mydaemon.h"
 
+//Manejadores
 int MyDaemon::sigHupSd[2];
 int MyDaemon::sigTermSd[2];
 int MyDaemon::sigIntSd[2];
 
+//Constructor
 MyDaemon::MyDaemon(QObject *parent) : QObject(parent)
 {
     // Crear la pareja de sockets de UNIX
@@ -26,19 +28,17 @@ MyDaemon::MyDaemon(QObject *parent) : QObject(parent)
     // Conectar la señal activated() del objeto QSocketNotifier
     // con el slot handleSigTerm() para manejar la señal. Esta
     // señal será emitida cuando hayan datos para ser leidos en
-    // el socket monitorizado.
     connect(sigHupNotifier, SIGNAL(activated(int)), this,
             SLOT(handleSigHup()));
     connect(sigTermNotifier, SIGNAL(activated(int)), this,
             SLOT(handleSigTerm()));
     connect(sigIntNotifier, SIGNAL(activated(int)), this,
             SLOT(handleSigInt()));
-
-    //...
 }
+//Destructor
 MyDaemon::~MyDaemon()
 {
-    //Nothing
+
 }
 // Manejador de la señal POSIX SIGTERM
 void MyDaemon::termSignalHandler(int)
@@ -66,13 +66,9 @@ void MyDaemon::handleSigTerm()
     char tmp;
     ::read(sigTermSd[1], &tmp, sizeof(tmp));
 
-    //sslSocket_->disconnect();
-    //sslSocket_->deleteLater();
-    qDebug("Disconnected");
-    //qApp->quit();
+    qDebug("Desconectado");
     QApplication::quit();
     deleteLater();
-
     sigTermNotifier->setEnabled(true);
 }
 //Cerrar conexiones y reiniciar servicio
@@ -82,15 +78,7 @@ void MyDaemon::handleSigHup()
     sigHupNotifier->setEnabled(false);
     char tmp;
     ::read(sigHupSd[1], &tmp, sizeof(tmp));
-
-
-    //qApp->quit();
     QApplication::quit();
-    //sslSocket_->disconnect();
-    //sslSocket_->deleteLater();
-    //sslSocket_=new QSslSocket;
-    //reconnect();
-
     sigHupNotifier->setEnabled(true);
 }
 //Interrumpir proceso a peticion del usuario Ctrl+C
@@ -101,13 +89,7 @@ void MyDaemon::handleSigInt()
     ::read(sigIntSd[1], &tmp, sizeof(tmp));
 
     qDebug("Sigint");
-    //sslSocket_->disconnect();
-    //sslSocket_->deleteLater();
-    qDebug("Disconnected");
     QApplication::quit();
-    //QCoreApplication::quit();
-    //deleteLater();
-
     sigHupNotifier->setEnabled(true);
 }
 

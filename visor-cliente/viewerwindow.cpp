@@ -44,7 +44,7 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     hilo_.start();// Iniciar el hilo de trabajo
 
     on_actionComenzar_a_enviar_triggered();
-    qDebug() << "ya";
+
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -111,7 +111,6 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     if(sslSocket_==NULL)
     {
         sslSocket_ = new QSslSocket(this);
-        //m_.setSslSocket(sslSocket_);
     }
     else
     {
@@ -119,7 +118,6 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
         delete sslSocket_;
         sslSocket_ = new QSslSocket(this);
     }
-
     sslSocket_->setProtocol(QSsl::SslV3);
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
@@ -340,7 +338,6 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     if(sslSocket_==NULL)
     {
         sslSocket_ = new QSslSocket(this);
-        //m_.setSslSocket(sslSocket_);
     }
     else
     {
