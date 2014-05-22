@@ -1,4 +1,4 @@
-Proyecto conjunto de la asingnatura Sistemas operativos avanzados, Ingeniería Informática
+Proyecto conjunto de la asingnatura Sistemas Operativos Avanzados, Ingeniería Informática
 
 Este proyecto costa de una aplicación de videovigilancia cliente-servidor.
 Para más información mirar los Wikis de la aplicación.
