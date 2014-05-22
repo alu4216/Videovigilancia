@@ -44,7 +44,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
     hilo_.start();// Iniciar el hilo de trabajo
 
     on_actionComenzar_a_enviar_triggered();
-
 }
 //Destructor
 ViewerWindow::~ViewerWindow()
@@ -118,6 +117,7 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
         delete sslSocket_;
         sslSocket_ = new QSslSocket(this);
     }
+
     sslSocket_->setProtocol(QSsl::SslV3);
     sslSocket_->connectToHostEncrypted(ip,puerto);
     sslSocket_->ignoreSslErrors();
@@ -187,7 +187,6 @@ void ViewerWindow::on_actionAcercaDe_triggered()
 //Capturar imagenes de la cámra
 void ViewerWindow::on_actionCapturar_triggered()
 {
-    qDebug() << "entra en onactioncapturar";
     if(movie_!=NULL)
     {
         delete movie_;
@@ -338,6 +337,7 @@ void ViewerWindow::on_actionComenzar_a_enviar_triggered()
     if(sslSocket_==NULL)
     {
         sslSocket_ = new QSslSocket(this);
+        //m_.setSslSocket(sslSocket_);
     }
     else
     {

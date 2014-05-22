@@ -99,6 +99,7 @@ private:
     Deteccion imageProcesor_;
     QThread hilo_;
     MyDaemon m_;
+
 };
 
 #endif // VIEWERWINDOW_H
