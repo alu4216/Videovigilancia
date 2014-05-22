@@ -5,7 +5,6 @@ SslServer::SslServer(QObject *parent) :
     QTcpServer(parent)
 {
 
-    syslog(LOG_ERR, "ENTRO A sslserver\n");
     QSettings settings;
     //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     QString string = APP_DATADIR;

@@ -11,7 +11,6 @@
 #include <QApplication>
 
 int setupUnixSignalHandlers();
-
 class MyDaemon : public QObject
 {
     Q_OBJECT
@@ -35,11 +34,10 @@ class MyDaemon : public QObject
         void handleSigInt();
 
     private:
-
+        // En este caso es para la señal SIGTERM
         static int sigTermSd[2];
         static int sigHupSd[2];
         static int sigIntSd[2];
-
         QSocketNotifier *sigTermNotifier;
         QSocketNotifier *sigHupNotifier;
         QSocketNotifier *sigIntNotifier;

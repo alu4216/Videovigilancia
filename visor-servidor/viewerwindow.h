@@ -48,7 +48,6 @@
 #include <stdio.h>
 
 
-
 namespace Ui {
 class ViewerWindow;
 }

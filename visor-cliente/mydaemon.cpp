@@ -1,6 +1,5 @@
 #include "mydaemon.h"
 
-//Manejadores
 int MyDaemon::sigHupSd[2];
 int MyDaemon::sigTermSd[2];
 int MyDaemon::sigIntSd[2];
@@ -16,8 +15,6 @@ MyDaemon::MyDaemon(QObject *parent) : QObject(parent)
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigIntSd))
         qFatal("Couldn't create INT socketpair");
 
-    // Crear el objeto para monitorizar uno de los sockets
-    // de la pareja.
     sigHupNotifier = new QSocketNotifier(sigHupSd[1],
             QSocketNotifier::Read, this);
     sigTermNotifier = new QSocketNotifier(sigTermSd[1],
@@ -26,8 +23,7 @@ MyDaemon::MyDaemon(QObject *parent) : QObject(parent)
             QSocketNotifier::Read, this);
 
     // Conectar la señal activated() del objeto QSocketNotifier
-    // con el slot handleSigTerm() para manejar la señal. Esta
-    // señal será emitida cuando hayan datos para ser leidos en
+    // con el slot handleSigTerm() para manejar la señal.
     connect(sigHupNotifier, SIGNAL(activated(int)), this,
             SLOT(handleSigHup()));
     connect(sigTermNotifier, SIGNAL(activated(int)), this,
@@ -65,10 +61,10 @@ void MyDaemon::handleSigTerm()
     sigTermNotifier->setEnabled(false);
     char tmp;
     ::read(sigTermSd[1], &tmp, sizeof(tmp));
-
     qDebug("Desconectado");
     QApplication::quit();
     deleteLater();
+
     sigTermNotifier->setEnabled(true);
 }
 //Cerrar conexiones y reiniciar servicio
@@ -87,12 +83,11 @@ void MyDaemon::handleSigInt()
     sigIntNotifier->setEnabled(false);
     char tmp;
     ::read(sigIntSd[1], &tmp, sizeof(tmp));
-
-    qDebug("Sigint");
+    qDebug("Desconectado");
     QApplication::quit();
     sigHupNotifier->setEnabled(true);
 }
-
+//Establecer manejadores
 int setupUnixSignalHandlers()
 {
     struct ::sigaction hup, term, ints;

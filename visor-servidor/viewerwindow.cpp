@@ -1,7 +1,6 @@
 #include "viewerwindow.h"
 #include "ui_viewerwindow.h"
 
-
 //Constructor
 ViewerWindow::ViewerWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -35,8 +34,6 @@ ViewerWindow::ViewerWindow(QWidget *parent) :
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
     }
-    QSqlQuery query3;
-    query3.exec("PRAGMA synchronous = 0");
     QSqlQuery query;
     query.exec("create table if not exists Datos"
                "(id integer primary key autoincrement, "
@@ -217,7 +214,6 @@ void ViewerWindow::actualizar_s(int i)
 //Ventana de captura de red. Preferencias de la captura de red
 void ViewerWindow::on_actionCaptura_de_Red_triggered()
 {
-    syslog(LOG_NOTICE, "ENTRO A captura de red\n");
     capturaRed_= new CapturaRed();
     capturaRed_->show();
     connect(capturaRed_,SIGNAL(s_capture()),this,SLOT(capture_s()));
@@ -225,7 +221,6 @@ void ViewerWindow::on_actionCaptura_de_Red_triggered()
 //Inicio de la captura de red
 void ViewerWindow::capture_s()
 {
-    syslog(LOG_NOTICE, "ENTRO A capture s\n");
     QSettings settings;
     //QSettings settings(APP_CONFFILE, QSettings::IniFormat);
     int puerto=settings.value("Puertos/puerto",15000).toInt();
@@ -256,7 +251,6 @@ void ViewerWindow::capture_s()
     ui->label->setText(tr("El servidor está corriendo en la: \n\nIP: %1\nPuerto: %2\n\n"
                           "Envia imágenes ahora.").arg(ipAddress).arg(puerto));
 
-    syslog(LOG_NOTICE, "ENTRO A finalllll captura s\n");
 }
 //Muestra el guión de las consultas a la base de datos
 void ViewerWindow::on_actionBase_de_datos_triggered()

@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     if(argc >= 3)
     {
         qDebug()<<"ENTRO A DEMONIO";
+        qDebug()<<argc;
         daemon = true;
         pid_t pid;
 
@@ -26,12 +27,10 @@ int main(int argc, char *argv[])
             std::cerr << strerror(errno) << std::endl;
             exit(10);
         }
-
         // Si pid es > 0, estamos en el proceso padre
         if (pid > 0)
         {
             // Terminar el proceso
-
             exit(0);
         }
         // Cambiar umask
@@ -59,14 +58,13 @@ int main(int argc, char *argv[])
         close(STDOUT_FILENO);           // fd 1
         close(STDERR_FILENO);           // fd 2
 
-
         // Abrir nuevos descriptores de E/S
         int fd0 = open("/dev/null", O_RDONLY);  // fd0 == 0
         int fd1 = open("/dev/null", O_WRONLY);  // fd0 == 1
         int fd2 = open("/dev/null", O_WRONLY);  // fd0 == 2
-        Q_UNUSED(fd0);
-        Q_UNUSED(fd1);
-        Q_UNUSED(fd2);
+        Q_UNUSED (fd0);
+        Q_UNUSED (fd1);
+        Q_UNUSED (fd2);
 
         //Cambiar el usuario efectivo del proceso a 'midemonio'
         QSettings settings;
@@ -96,7 +94,6 @@ int main(int argc, char *argv[])
         std::fstream out( (QString("/var/run/") + argv[0] + ".pid").toStdString().c_str());
         out << pid;
         out.close();
-
     }
     else
         std::cout << "Parametro incorrecto" << std::endl;

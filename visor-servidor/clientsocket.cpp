@@ -1,11 +1,9 @@
 #include "clientsocket.h"
-#include <syslog.h>
-#include <time.h>
+
 //Constructor
 ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
     QObject(parent),sslSocket_(sslSocket)
 {
-    syslog(LOG_NOTICE, "ENTRO A clientesocket\n");
     db_ = QSqlDatabase::addDatabase("QSQLITE");
     QString string=APP_DATADIR;
     string+="/data.sqlite";
@@ -15,10 +13,8 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
         QMessageBox::critical(NULL, tr("Error"),
                               tr("No se pudo acceder a los datos."));
     }
-    QSqlQuery query3;
-    query3.exec("PRAGMA synchronous = 0");
     leer_cabecera_=false;
-    leer_imagen_=false; //10.213.3.6
+    leer_imagen_=false;
     leer_timestamp_=true;
     leer_size_string_=false;
     leer_string_=false;
@@ -41,8 +37,6 @@ ClientSocket::ClientSocket(QSslSocket *sslSocket, QObject *parent) :
 ClientSocket::~ClientSocket()
 {
     delete sslSocket_;
-    //delete layout_;
-    //delete widget_;
 }
 //Leer datos del socket
 void ClientSocket::readData()
@@ -266,7 +260,6 @@ void ClientSocket::readData()
                 {
                     mostrarImagen_=false;
                     widget_->show();
-
                 }
                 label_.setPixmap(pixmap);
             }
@@ -286,13 +279,9 @@ void ClientSocket::mostrarErrores(QAbstractSocket::SocketError )
     widget_->close();
 }
 //Guardar imagenes en directores segun el timestamp
-void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen){
-    syslog(LOG_NOTICE, "ENTRO A guardar imagen\n");
-
-
+void ClientSocket::guardarImagen(qint64 timestamp, QImage imagen)
+{
     qint64 clock = QDateTime::currentMSecsSinceEpoch();
-
-
     qint32 szHx = 16;
     qint32 s1 = 4;
     qint32 s2 = 8;

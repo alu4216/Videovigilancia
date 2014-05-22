@@ -23,6 +23,7 @@ signals:
 private slots:
 
     void on_pushOk_clicked();
+
     void on_pushCerrar_clicked();
 
 private:

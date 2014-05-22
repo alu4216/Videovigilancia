@@ -48,12 +48,11 @@ FORMS    += viewerwindow.ui \
 unix {
     # Esta configuración específica de Linux y UNIX
     # Variables
-    #
     isEmpty(PREFIX) {
         PREFIX = /usr/local
     }
-    MOC_DIR= /etc/visor/moc
-    OBJECTS_DIR=/etc/visor/object
+    MOC_DIR= ./moc
+    OBJECTS_DIR=./object
     SCRITP_DIR= ./scritp
 
     BINDIR  = $$PREFIX/bin

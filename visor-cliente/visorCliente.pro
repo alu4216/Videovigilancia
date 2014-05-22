@@ -50,6 +50,7 @@ LIBS += -L/usr/local/lib \
     -lopencv_imgproc \
     -lopencv_video
 
+
 ####################################################################################
 
 unix {
@@ -59,15 +60,14 @@ unix {
     isEmpty(PREFIX) {
         PREFIX = /usr/local
     }
-    MOC_DIR= /etc/visor/moc
-    OBJECTS_DIR=/etc/visor/object
+    MOC_DIR= ./moc
+    OBJECTS_DIR=./object
     BINDIR  = $$PREFIX/bin
     CONFDIR = /etc/xdg
 
     DEFINES += APP_CONFFILE=\\\"$$CONFDIR/$${TARGET}.ini\\\"
 
     # Install
-
     INSTALLS += target config
 
     ## Instalar ejecutable
@@ -76,4 +76,6 @@ unix {
     ## Instalar archivo de configuración
     config.path = $$CONFDIR
     config.files += $${TARGET}.ini
+
+
 }

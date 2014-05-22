@@ -110,6 +110,7 @@ void ViewerWindow::on_actionAbrirVideo_triggered()
     if(sslSocket_==NULL)
     {
         sslSocket_ = new QSslSocket(this);
+        //m_.setSslSocket(sslSocket_);
     }
     else
     {
@@ -187,6 +188,7 @@ void ViewerWindow::on_actionAcercaDe_triggered()
 //Capturar imagenes de la cámra
 void ViewerWindow::on_actionCapturar_triggered()
 {
+    qDebug() << "entra en onactioncapturar";
     if(movie_!=NULL)
     {
         delete movie_;

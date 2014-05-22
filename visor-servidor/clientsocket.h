@@ -18,6 +18,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QGridLayout>
+#include <time.h>
 
 class ClientSocket : public QObject
 {
